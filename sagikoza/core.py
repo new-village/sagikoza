@@ -52,8 +52,8 @@ def _extract_doc_ids(table) -> List[str]:
     doc_ids = [inp.get('value') for inp in table.find_all('input', {'name': 'doc_id'}) if inp.get('value')]
     logger.debug(f"Extracted doc_ids: {doc_ids}")
     # Debug: only extract 14918
-    return ["14918"]
-    # return doc_ids
+    # return ["14918"]
+    return doc_ids
 
 def _fetch_detail_html(doc_id: str) -> BeautifulSoup:
     """
