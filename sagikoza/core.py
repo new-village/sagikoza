@@ -137,11 +137,16 @@ def _fetch_notices(search_term: str):
         try:
             detail_soup = _fetch_detail_html(doc_id)
             abs_links = _get_basic_frame_links(detail_soup)
+            # メモリ節約: 使い終わったsoupを明示的に削除
+            del detail_soup
             results = []
             def process_abs_link(abs_link):
                 try:
                     table = _fetch_table_from_basic_frame(abs_link)
-                    return _parse_table_rows(table, doc_id, abs_link)
+                    parsed = _parse_table_rows(table, doc_id, abs_link)
+                    # メモリ節約: 使い終わったtableを明示的に削除
+                    del table
+                    return parsed
                 except Exception as e:
                     logger.exception(f"abs_link処理中に例外: doc_id={doc_id}, abs_link={abs_link}")
                     return []
