@@ -1,5 +1,5 @@
 import pytest
-from sagifetcher import core
+from sagikoza import core
 import datetime
 from unittest.mock import patch, MagicMock
 
