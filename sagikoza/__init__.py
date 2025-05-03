@@ -1,1 +1,1 @@
-from .core import fetch
+from sagikoza.core import fetch
