@@ -38,4 +38,21 @@ Fetch notices published under the Furikome Sagi Relief Act during the most recen
 ```
 
 ## Referece
-* [振り込め詐欺救済法に基づく公告](https://furikomesagi.dic.go.jp/index.php)  
+* [振り込め詐欺救済法に基づく公告](https://furikomesagi.dic.go.jp/index.php)
+
+## Logging 設定例
+sagikozaはPython標準のloggingモジュールを利用しています。トラブルシュートや詳細な動作確認を行いたい場合は、以下のようにlogging設定を行うことで、詳細なログを出力できます。
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # 必要に応じてDEBUGなどに変更
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+)
+
+import sagikoza
+sagikoza.fetch()
+```
+
+デフォルトではWARNING以上のみ出力されます。詳細なトレースが必要な場合は`level=logging.DEBUG`にしてください。
