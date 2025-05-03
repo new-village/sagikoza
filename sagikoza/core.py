@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import parse_qs, urlparse
 import concurrent.futures
 import logging
+from typing import Optional, List, Dict, Any
 
 DOMAIN = "https://furikomesagi.dic.go.jp"
 HEADERS = {
@@ -12,11 +13,17 @@ HEADERS = {
 
 logger = logging.getLogger(__name__)
 
-def _get_notice_table(search_term: str):
+def _get_notice_table(search_term: str) -> Optional[BeautifulSoup]:
     """
-    公告一覧テーブルを取得
+    Fetch the notice table HTML for a given search term.
+
+    Args:
+        search_term (str): The search term to use for fetching the notice table.
+
+    Returns:
+        bs4.element.Tag or None: The BeautifulSoup Tag object representing the notice table, or None if not found.
     """
-    logger.debug(f"公告一覧テーブル取得: search_term={search_term}")
+    logger.debug(f"Fetching notice table: search_term={search_term}")
     url = f"{DOMAIN}/sel_pubs.php"
     payload = {
         "search_term": search_term,
@@ -29,56 +36,88 @@ def _get_notice_table(search_term: str):
     soup = BeautifulSoup(response.text, "html.parser")
     return soup.find("table", class_="sel_pubs_list")
 
-def _extract_doc_ids(table):
+def _extract_doc_ids(table) -> List[str]:
     """
-    公告IDリストをテーブルから抽出
+    Extract notice document IDs from the notice table.
+
+    Args:
+        table (bs4.element.Tag): The BeautifulSoup Tag object representing the notice table.
+
+    Returns:
+        list[str]: A list of document IDs extracted from the table.
     """
     if not table:
-        logger.warning("公告テーブルが見つかりませんでした。")
+        logger.warning("Notice table not found.")
         return []
     doc_ids = [inp.get('value') for inp in table.find_all('input', {'name': 'doc_id'}) if inp.get('value')]
-    logger.debug(f"抽出されたdoc_ids: {doc_ids}")
-    # デバッグ用（14918 のみ抽出）
-    # return ["14918"]
-    return doc_ids
+    logger.debug(f"Extracted doc_ids: {doc_ids}")
+    # Debug: only extract 14918
+    return ["14918"]
+    # return doc_ids
 
-def _fetch_detail_html(doc_id: str):
+def _fetch_detail_html(doc_id: str) -> BeautifulSoup:
     """
-    公告詳細ページのHTMLを取得
+    Fetch the HTML of the notice detail page for a given document ID.
+
+    Args:
+        doc_id (str): The document ID for which to fetch the detail page.
+
+    Returns:
+        bs4.BeautifulSoup: The BeautifulSoup object of the detail page HTML.
     """
-    logger.debug(f"公告詳細HTML取得: doc_id={doc_id}")
+    logger.debug(f"Fetching notice detail HTML: doc_id={doc_id}")
     url = f"{DOMAIN}/pubs_dispatcher.php"
     payload = {"head_line": "", "doc_id": doc_id}
     response = requests.post(url, data=payload, headers=HEADERS)
     response.encoding = response.apparent_encoding
     return BeautifulSoup(response.text, "html.parser")
 
-def _get_basic_frame_links(detail_soup):
+def _get_basic_frame_links(detail_soup: BeautifulSoup) -> List[str]:
     """
-    pubs_basic_frame.php へのリンクを抽出
+    Extract links to 'pubs_basic_frame.php' from the detail page soup.
+
+    Args:
+        detail_soup (bs4.BeautifulSoup): The BeautifulSoup object of the detail page HTML.
+
+    Returns:
+        list[str]: A list of relative URLs to 'pubs_basic_frame.php'.
     """
     links = [link.get('href').replace('.', '', 1) for link in detail_soup.find_all('a')
             if link.get('href', '').startswith('./pubs_basic_frame.php')]
-    logger.debug(f"basic_frameリンク抽出: {links}")
+    logger.debug(f"Extracted basic_frame links: {links}")
     return links
 
-def _fetch_table_from_basic_frame(abs_link):
+def _fetch_table_from_basic_frame(abs_link: str) -> Optional[Any]:
     """
-    pubs_basic_frame.php のテーブルを取得
+    Fetch the table from a 'pubs_basic_frame.php' page.
+
+    Args:
+        abs_link (str): The absolute link to the 'pubs_basic_frame.php' page.
+
+    Returns:
+        bs4.element.Tag or None: The BeautifulSoup Tag object representing the table, or None if not found.
     """
-    logger.debug(f"basic_frameテーブル取得: abs_link={abs_link}")
+    logger.debug(f"Fetching basic_frame table: abs_link={abs_link}")
     url = f"{DOMAIN}{abs_link}"
     response = requests.get(url, headers=HEADERS)
     response.encoding = response.apparent_encoding
     soup = BeautifulSoup(response.text, "html.parser")
-    return soup.find('table', style="{ border: 1px #333333 solid; width: 800px; border-collapse: collapse; empty-cells: show; }")
+    return soup.select_one('table[style*="1px #333333"][style*="width: 800px"]')
 
-def _parse_table_rows(table, doc_id, abs_link):
+def _parse_table_rows(table, doc_id: str, abs_link: str) -> List[Dict[str, Any]]:
     """
-    テーブル行をパースして辞書リスト化
+    Parse table rows into a list of dictionaries containing notice details.
+
+    Args:
+        table (bs4.element.Tag): The BeautifulSoup Tag object representing the table.
+        doc_id (str): The document ID associated with the table.
+        abs_link (str): The absolute link to the table page.
+
+    Returns:
+        list[dict]: A list of dictionaries, each representing a row of notice details.
     """
     if not table:
-        logger.warning(f"テーブルが見つかりません: doc_id={doc_id}, abs_link={abs_link}")
+        logger.warning(f"Table not found: doc_id={doc_id}, abs_link={abs_link}")
         return []
     rows = table.find_all('tr')[2:]
     query_params = parse_qs(urlparse(abs_link).query)
@@ -107,8 +146,8 @@ def _parse_table_rows(table, doc_id, abs_link):
                 "name": record[6].text.strip().replace('\u3000', ' '),
             })
         elif len(record) == 5:
-            # ゆうちょ銀行などの例外処理
-            logger.debug(f"例外的なテーブル行: doc_id={doc_id}, abs_link={abs_link}")
+            # Exception handling for Japan Post Bank, etc.
+            logger.debug(f"Exceptional table row: doc_id={doc_id}, abs_link={abs_link}")
             flat_links.append({
                 "doc_id": doc_id,
                 "id": id,
@@ -125,30 +164,54 @@ def _parse_table_rows(table, doc_id, abs_link):
             })
     return flat_links
 
-def _fetch_notices(search_term: str):
+def _fetch_notices(search_term: str) -> List[Dict[str, Any]]:
     """
-    振り込め詐欺救済法に基づく公告を検索条件に基づいて取得する共通関数
+    Fetch notices based on the given search criteria.
+
+    Args:
+        search_term (str): The search term or year to fetch notices for.
+
+    Returns:
+        list[dict]: A list of dictionaries containing notice details.
     """
     table = _get_notice_table(search_term)
     doc_ids = _extract_doc_ids(table)
-    logger.info(f"取得対象doc_id数: {len(doc_ids)}")
+    logger.info(f"Number of doc_ids to fetch: {len(doc_ids)}")
     flat_links = []
     def process_doc_id(doc_id):
+        """
+        Process a single document ID to fetch and parse its notice details.
+
+        Args:
+            doc_id (str): The document ID to process.
+
+        Returns:
+            list[dict]: A list of dictionaries containing notice details for the document ID.
+        """
         try:
             detail_soup = _fetch_detail_html(doc_id)
             abs_links = _get_basic_frame_links(detail_soup)
-            # メモリ節約: 使い終わったsoupを明示的に削除
+            # Memory optimization: explicitly delete soup after use
             del detail_soup
             results = []
             def process_abs_link(abs_link):
+                """
+                Process a single absolute link to fetch and parse its table rows.
+
+                Args:
+                    abs_link (str): The absolute link to process.
+
+                Returns:
+                    list[dict]: A list of dictionaries containing notice details for the link.
+                """
                 try:
                     table = _fetch_table_from_basic_frame(abs_link)
                     parsed = _parse_table_rows(table, doc_id, abs_link)
-                    # メモリ節約: 使い終わったtableを明示的に削除
+                    # Memory optimization: explicitly delete table after use
                     del table
                     return parsed
                 except Exception as e:
-                    logger.exception(f"abs_link処理中に例外: doc_id={doc_id}, abs_link={abs_link}")
+                    logger.exception(f"Exception while processing abs_link: doc_id={doc_id}, abs_link={abs_link}")
                     return []
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as link_executor:
                 link_futures = [link_executor.submit(process_abs_link, abs_link) for abs_link in abs_links]
@@ -156,10 +219,10 @@ def _fetch_notices(search_term: str):
                     try:
                         results.extend(future.result())
                     except Exception as e:
-                        logger.exception(f"link_futures処理中に例外: doc_id={doc_id}")
+                        logger.exception(f"Exception in link_futures: doc_id={doc_id}")
             return results
         except Exception as e:
-            logger.exception(f"doc_id処理中に例外: doc_id={doc_id}")
+            logger.exception(f"Exception while processing doc_id: doc_id={doc_id}")
             return []
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as doc_executor:
         doc_futures = [doc_executor.submit(process_doc_id, doc_id) for doc_id in doc_ids]
@@ -167,26 +230,34 @@ def _fetch_notices(search_term: str):
             try:
                 flat_links.extend(future.result())
             except Exception as e:
-                logger.exception("doc_futures処理中に例外")
-    logger.info(f"最終取得件数: {len(flat_links)}")
+                logger.exception("Exception in doc_futures")
+    logger.info(f"Total records fetched: {len(flat_links)}")
     return flat_links
 
-def fetch(year: str = None):
+def fetch(year: Optional[str] = None) -> List[Dict[str, Any]]:
     """
-    指定した年(YYYY)または直近3ヶ月分の振り込め詐欺救済法に基づく公告を取得します。
-    年が指定されていればその年の公告一覧を、指定されていなければ直近3ヶ月分を取得します。
+    Fetch notices for the specified year or for the last 3 months.
+
+    Args:
+        year (str, optional): The year (YYYY) to fetch notices for. If None, fetches notices for the last 3 months.
+
+    Returns:
+        list[dict]: A list of dictionaries containing notice details.
+
+    Raises:
+        ValueError: If the year is invalid or in the wrong format.
     """
     if year is None:
-        logger.info("直近3ヶ月分の公告を取得")
+        logger.info("Fetching notices for the last 3 months")
         return _fetch_notices("near3")
     try:
         y = int(year)
         now_year = datetime.datetime.now().year
         if y < 2008 or y > now_year:
-            logger.error(f"不正な年指定: {year}")
+            logger.error(f"Invalid year specified: {year}")
             raise ValueError("Year must be 2008 or later and not in the future.")
     except Exception as e:
-        logger.error(f"年指定のパースに失敗: {year}")
+        logger.error(f"Failed to parse year: {year}")
         raise ValueError("Invalid year format. Use 'YYYY'.") from e
-    logger.info(f"{year}年の公告を取得")
+    logger.info(f"Fetching notices for year {year}")
     return _fetch_notices(year)

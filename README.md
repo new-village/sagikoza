@@ -1,5 +1,7 @@
 # sagikoza
-A Python library for crawling and retrieving all notices published under Japan’s Furikome Sagi Relief Act, with support for both full data extraction and incremental updates.
+![PyPI - Version](https://img.shields.io/pypi/v/sagikoza)  
+A Python library for crawling and retrieving all notices published under Japan’s Furikome Sagi Relief Act, with support for both full data extraction and incremental updates.  
+[日本語版の説明はこちらを参照ください](https://note.com/newvillage/n/n6553ca45bd85)  
 
 ## Features
 - Automatically retrieves public notices under the Furikome Sagi Relief Act
@@ -64,6 +66,8 @@ Bug reports, feature requests, and pull requests are welcome. Please use GitHub 
 
 ## License
 This project is licensed under the Apache License. See the LICENSE file for details.
+
+This software uses BeautifulSoup, which is licensed under the MIT License. See the LICENSE file for details.
 
 ## Notes
 - This library retrieves data from public sources. Changes to the source website may affect functionality.
