@@ -1,7 +1,10 @@
 import logging
 from bs4 import BeautifulSoup
 import requests
-from typing import Literal, Any
+from typing import Literal, Any, Dict, List
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import wraps
+from time import sleep
 from sagikoza.parser.sel_pubs import parse_notices
 from sagikoza.parser.pubs_dispatcher import parse_submit
 from sagikoza.parser.pubs_basic_frame import parse_subject
@@ -20,6 +23,60 @@ class FetchError(Exception):
     """Exception for HTML fetch errors."""
     pass
 
+def retry_on_error(max_retries: int = 3, delay: float = 1.0):
+    """Decorator to retry function calls on failure."""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Attempt {attempt + 1}/{max_retries} failed for {func.__name__}: {e}")
+                        sleep(delay * (2 ** attempt))  # Exponential backoff
+                    else:
+                        logger.error(f"All {max_retries} attempts failed for {func.__name__}")
+            raise last_exception
+        return wrapper
+    return decorator
+
+def process_items_with_error_handling(items: List[Dict[str, Any]], 
+                                    processor_func: callable, 
+                                    item_name: str,
+                                    max_workers: int = 5) -> List[Dict[str, Any]]:
+    """Process a list of items with error handling and logging using multithreading."""
+    results = []
+    successful = 0
+    failed = 0
+    
+    if not items:
+        logger.info(f"No {item_name}s to process")
+        return results
+    
+    # Use ThreadPoolExecutor for parallel processing
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all tasks
+        future_to_item = {executor.submit(processor_func, item): item for item in items}
+        
+        # Process completed tasks as they finish
+        for future in as_completed(future_to_item):
+            item = future_to_item[future]
+            try:
+                processed = future.result()
+                results.extend(processed)
+                successful += 1
+                logger.debug(f"Successfully processed {item_name}: {item.get('doc_id', item.get('no', 'unknown'))}")
+            except Exception as e:
+                failed += 1
+                logger.error(f"Error processing {item_name}: {item} | {e}")
+    
+    logger.info(f"Processed {len(items)} {item_name}s: {successful} successful, {failed} failed")
+    return results
+
+@retry_on_error(max_retries=3, delay=1.0)
 def fetch_html(
     url: str,
     method: Literal['GET', 'POST'] = 'GET',
@@ -51,7 +108,7 @@ def fetch_html(
         raise FetchError(f'Failed to fetch HTML from {url}') from e
     return BeautifulSoup(resp.text, 'html.parser')
 
-def _sel_pubs(year: str = "near3") -> list[dict[str, Any]]:
+def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
     """
     Get publication notices for the specified year.
     """
@@ -74,7 +131,7 @@ def _sel_pubs(year: str = "near3") -> list[dict[str, Any]]:
         logger.error(f"Exception in _sel_pubs: {e} | year={year}")
         raise
 
-def _pubs_dispatcher(notice: dict[str, Any]) -> list[dict[str, Any]]:
+def _pubs_dispatcher(notice: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Get publication details for a notice.
     """
@@ -92,7 +149,7 @@ def _pubs_dispatcher(notice: dict[str, Any]) -> list[dict[str, Any]]:
         logger.error(f"Exception in _pubs_dispatcher: {e} | notice={notice}")
         raise
 
-def _pubs_basic_frame(submit: dict[str, Any]) -> list[dict[str, Any]]:
+def _pubs_basic_frame(submit: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Get basic publication information for a submit.
     """
@@ -109,7 +166,7 @@ def _pubs_basic_frame(submit: dict[str, Any]) -> list[dict[str, Any]]:
         logger.error(f"Exception in _pubs_basic_frame: {e} | submit={submit}")
         raise
 
-def _pubstype_detail(subject: dict[str, Any]) -> list[dict[str, Any]]:
+def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     Get account details for a subject.
     """
@@ -133,34 +190,31 @@ def _pubstype_detail(subject: dict[str, Any]) -> list[dict[str, Any]]:
         logger.error(f"Exception in _pubstype_detail: {e} | subject={subject}")
         raise
 
-def fetch(year: str = "near3") -> list[dict[str, Any]]:
+def fetch(year: str = "near3", max_workers: int = 5) -> List[Dict[str, Any]]:
     """
     Fetch all publication data for the specified year.
+    
+    Args:
+        year: Year to fetch data for, or "near3" for latest 3 months
+        max_workers: Maximum number of concurrent threads for parallel processing
     """
-    logger.info(f"Starting fetch for year={year}")
+    logger.info(f"Starting fetch for year={year} with max_workers={max_workers}")
     try:
+        # Step 1: Get notices
         notices = _sel_pubs(year)
-        submits = []
-        for notice in notices:
-            try:
-                submits.extend(_pubs_dispatcher(notice))
-            except Exception as e:
-                logger.error(f"Error in fetch: _pubs_dispatcher failed | notice={notice} | {e}")
+        
+        # Step 2: Get submits with error handling and parallel processing
+        submits = process_items_with_error_handling(notices, _pubs_dispatcher, "notice", max_workers)
         logger.info(f"Total submits fetched: {len(submits)}")
-        subjects = []
-        for submit in submits:
-            try:
-                subjects.extend(_pubs_basic_frame(submit))
-            except Exception as e:
-                logger.error(f"Error in fetch: _pubs_basic_frame failed | submit={submit} | {e}")
+        
+        # Step 3: Get subjects with error handling and parallel processing
+        subjects = process_items_with_error_handling(submits, _pubs_basic_frame, "submit", max_workers)
         logger.info(f"Total subjects fetched: {len(subjects)}")
-        accounts = []
-        for subject in subjects:
-            try:
-                accounts.extend(_pubstype_detail(subject))
-            except Exception as e:
-                logger.error(f"Error in fetch: _pubstype_detail failed | subject={subject} | {e}")
+        
+        # Step 4: Get accounts with error handling and parallel processing
+        accounts = process_items_with_error_handling(subjects, _pubstype_detail, "subject", max_workers)
         logger.info(f"Total accounts fetched: {len(accounts)}")
+        
         logger.info(f"Fetch completed for year={year}")
         if not accounts:
             logger.warning(f"No accounts fetched for year={year}")
