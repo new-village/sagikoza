@@ -1,99 +1,196 @@
 import pytest
 from sagikoza import core
-import datetime
 from unittest.mock import patch, MagicMock
+from bs4 import BeautifulSoup
 
-# fetch の正常系（年指定）
-def test_fetch_valid_year(monkeypatch):
-    monkeypatch.setattr(core, "_fetch_notices", lambda year: [{"year": year}])
-    result = core.fetch("2020")
-    assert isinstance(result, list)
-    assert result[0]["year"] == "2020"
+@pytest.fixture
+def sel_pubs_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/sel_pubs.php", encoding="utf-8") as f:
+        return f.read()
 
-# fetch の正常系（デフォルト=直近3ヶ月）
-def test_fetch_default(monkeypatch):
-    monkeypatch.setattr(core, "_fetch_notices", lambda term: [{"term": term}])
-    result = core.fetch()
-    assert isinstance(result, list)
-    assert result[0]["term"] == "near3"
-
-# fetch の異常系（不正な年フォーマット）
-def test_fetch_invalid_year_format():
-    with pytest.raises(ValueError):
-        core.fetch("20xx")
-
-# fetch の異常系（古すぎる年）
-def test_fetch_year_too_old():
-    with pytest.raises(ValueError):
-        core.fetch("2007")
-
-# fetch の異常系（未来の年）
-def test_fetch_year_in_future():
-    future_year = str(datetime.datetime.now().year + 1)
-    with pytest.raises(ValueError):
-        core.fetch(future_year)
-
-# fetch の戻り値の型・内容
-# _fetch_notices をモックして複数要素返却
-def test_fetch_return_type_and_content(monkeypatch):
-    monkeypatch.setattr(core, "_fetch_notices", lambda year: [
-        {"notice_id": 1, "year": year},
-        {"notice_id": 2, "year": year}
-    ])
-    result = core.fetch("2023")
-    assert isinstance(result, list)
-    assert len(result) == 2
-    assert all("notice_id" in r for r in result)
-    assert all(r["year"] == "2023" for r in result)
-
-def test_fetch_with_mocked_requests():
-    # 公告一覧テーブルHTMLのモック
-    table_html = '''
-    <table class="sel_pubs_list">
-        <tr></tr><tr></tr>
-        <tr>
-            <td><input name="doc_id" value="14915"></td>
-        </tr>
-    </table>
-    '''
-    # 公告詳細ページHTMLのモック
-    detail_html = '''
-    <a href="./pubs_basic_frame.php?id=1">詳細</a>
-    '''
-    # pubs_basic_frame.phpのテーブルHTMLのモック
-    frame_html = '''
-    <table style="{ border: 1px #333333 solid; width: 800px; border-collapse: collapse; empty-cells: show; }">
-        <tr></tr><tr></tr>
-        <tr>
-            <td><input value="abc"></td>
-            <td>process</td>
-            <td>bank</td>
-            <td>branch</td>
-            <td>code</td>
-            <td>type</td>
-            <td>account</td>
-            <td>name</td>
-        </tr>
-    </table>
-    '''
-    # requests.postの返り値を切り替え
-    def post_side_effect(url, data, headers):
-        mock_resp = MagicMock()
-        if "sel_pubs.php" in url:
-            mock_resp.text = table_html
-        elif "pubs_dispatcher.php" in url:
-            mock_resp.text = detail_html
-        mock_resp.apparent_encoding = "utf-8"
-        return mock_resp
-    # requests.getの返り値
-    def get_side_effect(url, headers):
-        mock_resp = MagicMock()
-        mock_resp.text = frame_html
-        mock_resp.apparent_encoding = "utf-8"
-        return mock_resp
-    with patch("requests.post", side_effect=post_side_effect), \
-         patch("requests.get", side_effect=get_side_effect):
-        result = core.fetch("2023")
+def test_sel_pubs(sel_pubs_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(sel_pubs_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        result = core._sel_pubs("near3")
         assert isinstance(result, list)
-        # 1件以上返ること
-        assert len(result) >= 0
+        assert len(result) == 195
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'label': '（24年度第20回）権利行使の届出等 公告（07）第043号 令和７年４月２３日', 
+            'doc_id': '15362'
+        }
+        assert result[1] == expected
+
+def test_sel_pubs_empty():
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
+        result = core._sel_pubs("near3")
+        assert result == []
+
+def test_sel_pubs_exception():
+    with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
+        with pytest.raises(core.FetchError):
+            core._sel_pubs("near3")
+
+@pytest.fixture
+def pubs_dispatcher_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubs_dispatcher.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubs_dispatcher(pubs_dispatcher_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubs_dispatcher_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        notice = {'doc_id': '15362'}
+        result = core._pubs_dispatcher(notice)
+        assert isinstance(result, list)
+        assert len(result) == 8
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'inst_code': '0310', 
+            'p_id': '03', 
+            'pn': '365699', 
+            're': '0', 
+            'params': 'inst_code=0310&p_id=03&pn=365699&re=0', 
+            'doc_id': '15362'
+        }
+        assert result[6] == expected
+
+def test_pubs_dispatcher_empty():
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
+        notice = {'doc_id': '15362'}
+        result = core._pubs_dispatcher(notice)
+        assert result == []
+
+def test_pubs_dispatcher_exception():
+    with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
+        notice = {'doc_id': '15362'}
+        with pytest.raises(core.FetchError):
+            core._pubs_dispatcher(notice)
+
+@pytest.fixture
+def pubs_basic_frame_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubs_basic_frame.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubs_basic_frame(pubs_basic_frame_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubs_basic_frame_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        submit = {'params': 'inst_code=0034&p_id=03&pn=365600&re=0'}
+        result = core._pubs_basic_frame(submit)
+        assert isinstance(result, list)
+        assert len(result) == 44
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2421-0034-0004', 
+            'params': 'inst_code=0034&p_id=03&pn=365600&re=0'
+        }
+        assert result[3] == expected
+
+def test_pubs_basic_frame_empty():
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
+        submit = {'params': 'inst_code=0034&p_id=03&pn=365600&re=0'}
+        result = core._pubs_basic_frame(submit)
+        assert result == []
+
+def test_pubs_basic_frame_exception():
+    with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
+        submit = {'params': 'inst_code=0034&p_id=03&pn=365600&re=0'}
+        with pytest.raises(core.FetchError):
+            core._pubs_basic_frame(submit)
+
+@pytest.fixture
+def pubstype_detail_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubstype_detail.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubstype_detail(pubstype_detail_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubstype_detail_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2421-0034-0004",
+            "pn": "365600",
+            "p_id": "0034",
+            "re": "0",
+            "referer": '0'
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 4
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'role': '対象預金口座等に係る', 
+            'bank_name': 'セブン銀行', 
+            'branch_name': 'バラ支店', 
+            'branch_code': '107', 
+            'account_type': '普通預金', 
+            'account': '2639227', 
+            'name': 'ヤマダ リカ', 
+            'amount': '5,390,030', 
+            'effective_from': '2025年2月4日 0時', 
+            'effective_to': '2025年4月7日 15時', 
+            'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
+            'payment_period': '', 
+            'suspend_date': '2024年7月16日', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2421-0034-0004', 
+            'pn': '365600', 
+            'p_id': '0034', 
+            're': '0', 
+            'referer': '0'
+        }
+        assert result[0] == expected
+
+def test_pubstype_detail_empty():
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2421-0034-0004",
+            "pn": "365600",
+            "p_id": "0034",
+            "re": "0",
+            "referer": '0'
+        }
+        result = core._pubstype_detail(subject)
+        assert result == []
+
+def test_pubstype_detail_exception():
+    with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2421-0034-0004",
+            "pn": "365600",
+            "p_id": "0034",
+            "re": "0",
+            "referer": '0'
+        }
+        with pytest.raises(core.FetchError):
+            core._pubstype_detail(subject)
+
+def test_fetch_integration():
+    # 各関数の返り値をモックして統合テスト
+    with patch("sagikoza.core._sel_pubs", return_value=[{"doc_id": "1"}]):
+        with patch("sagikoza.core._pubs_dispatcher", return_value=[{"params": "p", "doc_id": "1"}]):
+            with patch("sagikoza.core._pubs_basic_frame", return_value=[{"form": "f.php", "no": "n", "params": "p"}]):
+                with patch("sagikoza.core._pubstype_detail", return_value=[{"account": "a", "form": "f.php", "no": "n", "params": "p"}]):
+                    result = core.fetch("near3")
+                    assert isinstance(result, list)
+                    assert result == [{"account": "a", "form": "f.php", "no": "n", "params": "p"}]
+
+def test_fetch_empty():
+    with patch("sagikoza.core._sel_pubs", return_value=[]):
+        result = core.fetch("near3")
+        assert result == []

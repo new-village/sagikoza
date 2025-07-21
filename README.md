@@ -1,78 +1,113 @@
 # sagikoza
-![PyPI - Version](https://img.shields.io/pypi/v/sagikoza)  
-A Python library for crawling and retrieving all notices published under Japan’s Furikome Sagi Relief Act, with support for both full data extraction and incremental updates.  
-[日本語版の説明はこちらを参照ください](https://note.com/newvillage/n/n6553ca45bd85)  
+![PyPI - Version](https://img.shields.io/pypi/v/sagikoza)
+
+A Python library for automatically crawling and retrieving all public notices under Japan’s Furikome Sagi Relief Act. Supports both full and incremental data extraction, returning results as a list of dictionaries.
+
+[日本語の説明はこちらを参照して下さい](https://note.com/newvillage/n/n6553ca45bd85)
+
+---
 
 ## Features
 - Automatically retrieves public notices under the Furikome Sagi Relief Act
-- Supports fetching by year or for the most recent 3 months
-- Incremental data retrieval
+- Supports fetching by year or for the latest 3 months
+- Incremental (diff) data retrieval
 - Returns data as a list of dictionaries
 
-## Supported Python Versions
+## Supported Environments
 - Python 3.8 or later
 
 ## Installation
-sagikoza is available on pip installation.
+Install from PyPI:
 ```shell
-$ python -m pip install sagikoza
+python -m pip install sagikoza
 ```
 
-### GitHub Install
-Installing the latest version from GitHub:
+Latest from GitHub:
 ```shell
-$ git clone https://github.com/new-village/sagikoza
-$ cd sagikoza
-$ python setup.py install
+git clone https://github.com/new-village/sagikoza
+cd sagikoza
+python setup.py install
 ```
 
 ## Usage
-This section describes how to use this library.
-
-### Get a specific year's notice
-Fetch notices published under the Furikome Sagi Relief Act from 2008 onwards. Returns the notices for the year passed as an argument as 'YYYY'.
+### Fetch notices for a specific year
+Retrieve notices published since 2008 for a given year (e.g., '2025').
 ```python
->>> import sagikoza
->>> mule_accounts = sagikoza.fetch('2025')
->>> print(mule_accounts)
-[{'doc_id': '12345', 'link': '/pubs_basic_frame.php?inst_code=1234&p_id=06&pn=123456&re=0', 'id': '1234-5678-9012', 'process': '債権消滅手続開始', 'bank_name': '大江戸銀行', 'branch_name': '丸の内支店', 'branch_code': '234', 'type': '普通預金', 'account': '1234567', 'name': 'カ）エドムラサキ'}, ... ]
+import sagikoza
+accounts = sagikoza.fetch('2025')
+print(accounts)
+# [{'doc_id': '12345', 'link': '/pubs_basic_frame.php?...', 'id': '...', ...}, ...]
 ```
 
-### Get the last 3 months' notices
-Fetch notices published under the Furikome Sagi Relief Act during the most recent three-month period.
+### Fetch notices for the last 3 months
+Call without arguments to get notices from the latest 3 months.
 ```python
->>> import sagikoza
->>> mule_accounts = sagikoza.fetch()
->>> print(mule_accounts)
-[{'doc_id': '12345', 'link': '/pubs_basic_frame.php?inst_code=1234&p_id=06&pn=123456&re=0', 'id': '1234-5678-9012', 'process': '債権消滅手続開始', 'bank_name': '大江戸銀行', 'branch_name': '丸の内支店', 'branch_code': '234', 'type': '普通預金', 'account': '1234567', 'name': 'カ）エドムラサキ'}, ... ]
+import sagikoza
+accounts = sagikoza.fetch()
+print(accounts)
 ```
 
-## Logging Example
-sagikoza uses Python's standard `logging` module. To troubleshoot or verify detailed behavior, you can configure logging as shown below to output detailed logs.
+### Save data example
+Save the retrieved data in Parquet format.
+```python
+import pandas as pd
+import sagikoza
+accounts = sagikoza.fetch()
+df = pd.DataFrame(accounts)
+df.to_parquet('accounts.parquet', index=False)
+```
 
+## Function Specification
+- `fetch(year: str = "near3") -> list[dict]`
+  - Specify a year (YYYY) or "near3" for the latest 3 months
+  - Raises an exception on failure
+
+## Internal Workflow
+1. Fetch notice list (POST: sel_pubs.php)
+2. Fetch notice details (POST: pubs_dispatcher.php)
+3. Fetch basic info (GET: pubs_basic_frame.php)
+4. Fetch account details (POST: k_pubstype_00_detail.php, etc.)
+
+Parameters required for each step are extracted from the HTML and used for subsequent page transitions.
+
+## Logging
+Uses Python's standard `logging` module. For detailed logs:
 ```python
 import logging
-logging.basicConfig(
-    level=logging.INFO,  # Change to DEBUG if more detailed logs are needed
-    format='%(asctime)s %(levelname)s %(name)s %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 import sagikoza
 sagikoza.fetch()
 ```
-By default, only logs with a level of WARNING or higher are displayed. If you need detailed traces, set `level=logging.DEBUG`.
+By default, only WARNING and above are shown. For more detail, set `level=logging.DEBUG`.
+
+## Error Handling
+- Network, HTTP, and timeout errors raise a `FetchError` exception
+- If no records are found, a WARNING log is output
+
+## Notes
+- This library retrieves data from public sources. Changes to the source website may affect functionality
+- Accuracy and completeness of retrieved data are not guaranteed. Please use together with official information
+
+## License
+Apache License 2.0
+- BeautifulSoup (MIT License)
 
 ## Contribution
 Bug reports, feature requests, and pull requests are welcome. Please use GitHub Issues or Pull Requests.
 
-## License
-This project is licensed under the Apache License. See the LICENSE file for details.
+## Reference
+- [Furikome Sagi Relief Act Notices](https://furikomesagi.dic.go.jp/index.php)
 
-This software uses BeautifulSoup, which is licensed under the MIT License. See the LICENSE file for details.
+## Page Flow
+The web pages to be scraped cannot be accessed directly by URL, but can be transitioned to the next page by making a POST request with a combination of parameters hidden within the page.
+Note: pubs_basic_frame.php can exceptionally be accessed via GET.
 
-## Notes
-- This library retrieves data from public sources. Changes to the source website may affect functionality.
-- The accuracy and completeness of the retrieved data are not guaranteed. Please use it together with official information.
+The web page contents can be obtained by accessing `file` using `methods` and `payload`.
+The contents include the payload's value, which is required for accessing other pages, in an element of `parameters`, which can be found using a `selector`.
 
-## Referece
-* [振り込め詐欺救済法に基づく公告](https://furikomesagi.dic.go.jp/index.php)
-
+| category   | file | method | payload | selector | parameters |
+| - | - | - | - | - | - |
+| notices | sel_pubs.php | POST | {"search_term": "near3", "search_no": "none", "search_pubs_type": "none", "sort_id": "5"} | `table.sel_pubs_list > tbody > input` | `<input type="hidden" name="doc_id" value="15362">` |
+| submits | pubs_dispatcher.php | POST | {"head_line": "", "doc_id": "15362"} | `table:nth-child(9) > tbody > tr > td.6 > a` | `<a href="./pubs_basic_frame.php?inst_code=0153&amp;p_id=05&amp;pn=365597&amp;re=0">（別添）</a>` |
+| subjects | pubs_basic_frame.php | GET | inst_code=0153&p_id=05&pn=365597&re=0 | `table:nth-child(12) > tbody > tr > td:nth-child(1) > input[type=submit]` | `<form method="POST" name="list_form" action="./k_pubstype_04_detail.php" target="_blank"></form><br><input type="submit" name="r_no" value=" 2420-0153-0007 ">` |
+| accounts | k_pubstype_00_detail.php | POST | {"r_no":"+2420-0153-0007+", "pn": "365597", "r_no": "2420-0153-0007", "p_id": "05", "re": "0", "referer": "0"} | | |
