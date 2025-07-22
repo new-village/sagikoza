@@ -64,7 +64,11 @@ def test_pubs_dispatcher_empty():
         mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
         notice = {'doc_id': '15362'}
         result = core._pubs_dispatcher(notice)
-        assert result == []
+        # リファクタリング後は空の場合エラーメッセージが返される
+        assert len(result) == 1
+        # 指定した辞書が含まれるかどうか
+        expected = {'doc_id': '15362', 'error': 'No submit found'}
+        assert result[0] == expected
 
 def test_pubs_dispatcher_exception():
     with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
@@ -99,7 +103,11 @@ def test_pubs_basic_frame_empty():
         mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
         submit = {'params': 'inst_code=0034&p_id=03&pn=365600&re=0'}
         result = core._pubs_basic_frame(submit)
-        assert result == []
+        expected = {
+            'error': 'No subjects found for submit params=inst_code=0034&p_id=03&pn=365600&re=0', 
+            'params': 'inst_code=0034&p_id=03&pn=365600&re=0'
+        }
+        assert result[0] == expected
 
 def test_pubs_basic_frame_exception():
     with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):
@@ -165,7 +173,16 @@ def test_pubstype_detail_empty():
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
-        assert result == []
+        expected = {
+            'error': 'No accounts found for subject no=2421-0034-0004',
+            "form": "k_pubstype_01_detail.php",
+            "no": "2421-0034-0004",
+            "pn": "365600",
+            "p_id": "0034",
+            "re": "0",
+            "referer": '0'
+        }
+        assert result[0] == expected
 
 def test_pubstype_detail_exception():
     with patch("sagikoza.core.fetch_html", side_effect=core.FetchError("fail")):

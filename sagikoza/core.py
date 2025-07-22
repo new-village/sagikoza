@@ -1,118 +1,235 @@
+"""
+Core module for sagikoza library - Refactored version.
+
+This module provides functions to fetch public notices under Japan's Furikome Sagi Relief Act.
+Supports both full data extraction and incremental updates.
+"""
+
 import logging
-from bs4 import BeautifulSoup
-import requests
-from typing import Literal, Any, Dict, List
+from typing import Literal, Any, Dict, List, Optional, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import wraps
 from time import sleep
+from dataclasses import dataclass
+from enum import Enum
+
+from bs4 import BeautifulSoup
+import requests
+
 from sagikoza.parser.sel_pubs import parse_notices
 from sagikoza.parser.pubs_dispatcher import parse_submit
 from sagikoza.parser.pubs_basic_frame import parse_subject
 from sagikoza.parser.pubstype_detail import parse_accounts
 
+# Constants
 DOMAIN = "https://furikomesagi.dic.go.jp"
-HEADERS = {
+DEFAULT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
-SESSION = requests.Session()
-SESSION.trust_env = False
+DEFAULT_TIMEOUT = 5.0
+DEFAULT_MAX_WORKERS = 5
+DEFAULT_MAX_RETRIES = 3
+DEFAULT_RETRY_DELAY = 1.0
 
 logger = logging.getLogger(__name__)
 
-class FetchError(Exception):
+# Global session
+SESSION = requests.Session()
+SESSION.trust_env = False
+SESSION.headers.update(DEFAULT_HEADERS)
+
+
+class ErrorType(Enum):
+    """エラーの種類を定義する列挙型."""
+    NETWORK = "network"
+    HTTP = "http"
+    TIMEOUT = "timeout"
+    PARSE = "parse"
+    VALIDATION = "validation"
+
+
+@dataclass
+class ProcessingStats:
+    """処理統計データクラス."""
+    total: int
+    successful: int
+    failed: int
+    
+    @property
+    def success_rate(self) -> float:
+        """成功率を計算."""
+        return self.successful / self.total if self.total > 0 else 0.0
+
+
+class SagiKozaError(Exception):
+    """Base exception for sagikoza library."""
+    def __init__(self, message: str, error_type: ErrorType = ErrorType.NETWORK):
+        super().__init__(message)
+        self.error_type = error_type
+
+
+class FetchError(SagiKozaError):
     """Exception for HTML fetch errors."""
     pass
 
-def retry_on_error(max_retries: int = 3, delay: float = 1.0):
-    """Decorator to retry function calls on failure."""
+
+class ValidationError(SagiKozaError):
+    """Exception for data validation errors."""
+    def __init__(self, message: str):
+        super().__init__(message, ErrorType.VALIDATION)
+
+
+def validate_year_parameter(year: str) -> str:
+    """年パラメータの妥当性を検証."""
+    if not isinstance(year, str):
+        raise ValidationError(f"Year must be a string, got {type(year)}")
+    
+    if year == "near3":
+        return year
+    
+    # 年形式の基本的な検証
+    if len(year) == 4 and year.isdigit():
+        year_int = int(year)
+        if 2008 <= year_int <= 2025:  # 合理的な年の範囲
+            return year
+
+    raise ValidationError(f"Invalid year format: {year}. Expected 'near3' or YYYY format (2008-2025)")
+
+
+def validate_required_fields(data: Dict[str, Any], required_fields: List[str], context: str = "") -> None:
+    """必須フィールドの存在を検証."""
+    missing_fields = [field for field in required_fields if field not in data or not data[field]]
+    if missing_fields:
+        context_str = f" in {context}" if context else ""
+        raise ValidationError(f"Missing required fields {missing_fields}{context_str}: {data}")
+
+
+def retry_on_error(max_retries: int = DEFAULT_MAX_RETRIES, delay: float = DEFAULT_RETRY_DELAY):
+    """関数の失敗時にリトライを行うデコレータ。重複エラーメッセージは抑制される。"""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             last_exception = None
+            error_logged = set()
+            
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:
                     last_exception = e
-                    if attempt < max_retries - 1:
-                        logger.warning(f"Attempt {attempt + 1}/{max_retries} failed for {func.__name__}: {e}")
-                        sleep(delay * (2 ** attempt))  # Exponential backoff
+                    err_msg = str(e)
+                    
+                    # 同じエラーメッセージは一回だけログに記録
+                    if err_msg not in error_logged:
+                        if attempt < max_retries - 1:
+                            logger.warning(f"Attempt {attempt + 1}/{max_retries} failed for {func.__name__}: {e}")
+                        else:
+                            logger.error(f"All {max_retries} attempts failed for {func.__name__}")
+                        error_logged.add(err_msg)
                     else:
-                        logger.error(f"All {max_retries} attempts failed for {func.__name__}")
+                        if attempt < max_retries - 1:
+                            logger.debug(f"Attempt {attempt + 1}/{max_retries} failed for {func.__name__}: {e} (suppressed duplicate error)")
+                    
+                    if attempt < max_retries - 1:
+                        sleep(delay * (2 ** attempt))
+            
             raise last_exception
         return wrapper
     return decorator
 
-def process_items_with_error_handling(items: List[Dict[str, Any]], 
-                                    processor_func: callable, 
-                                    item_name: str,
-                                    max_workers: int = 5) -> List[Dict[str, Any]]:
-    """Process a list of items with error handling and logging using multithreading."""
+
+def process_items_with_error_handling(
+    items: List[Dict[str, Any]], 
+    processor_func: callable, 
+    item_name: str,
+    max_workers: int = DEFAULT_MAX_WORKERS
+) -> tuple[List[Dict[str, Any]], ProcessingStats]:
+    """エラーハンドリングとロギングを備えたマルチスレッド処理でアイテムのリストを処理する。"""
     results = []
     successful = 0
     failed = 0
     
     if not items:
         logger.info(f"No {item_name}s to process")
-        return results
+        return results, ProcessingStats(0, 0, 0)
     
-    # Use ThreadPoolExecutor for parallel processing
+    logger.info(f"Processing {len(items)} {item_name}s with {max_workers} workers")
+    
+    # ThreadPoolExecutorを使用して並列処理
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all tasks
+        # 全てのタスクを投入
         future_to_item = {executor.submit(processor_func, item): item for item in items}
         
-        # Process completed tasks as they finish
+        # 完了したタスクを処理
         for future in as_completed(future_to_item):
             item = future_to_item[future]
             try:
                 processed = future.result()
-                results.extend(processed)
+                if processed:  # 空でない結果のみ追加
+                    results.extend(processed)
                 successful += 1
                 logger.debug(f"Successfully processed {item_name}: {item.get('doc_id', item.get('no', 'unknown'))}")
             except Exception as e:
                 failed += 1
                 logger.error(f"Error processing {item_name}: {item} | {e}")
     
-    logger.info(f"Processed {len(items)} {item_name}s: {successful} successful, {failed} failed")
-    return results
+    stats = ProcessingStats(len(items), successful, failed)
+    logger.info(f"Processed {stats.total} {item_name}s: {stats.successful} successful, {stats.failed} failed (success rate: {stats.success_rate:.2%})")
+    
+    return results, stats
 
-@retry_on_error(max_retries=3, delay=1.0)
+
+@retry_on_error(max_retries=DEFAULT_MAX_RETRIES, delay=DEFAULT_RETRY_DELAY)
 def fetch_html(
     url: str,
     method: Literal['GET', 'POST'] = 'GET',
-    data: dict | None = None,
-    timeout: float = 5.0,
+    data: Optional[Dict[str, Any]] = None,
+    timeout: float = DEFAULT_TIMEOUT,
 ) -> BeautifulSoup:
     """
-    Fetch HTML and return a BeautifulSoup object.
+    HTMLを取得しBeautifulSoupオブジェクトを返す。
 
     Args:
-        url: Target URL
-        method: HTTP method ('GET' or 'POST')
-        data: Parameters for GET or body for POST
-        timeout: Request timeout (seconds)
+        url: 対象URL
+        method: HTTPメソッド ('GET' または 'POST')
+        data: GETのパラメータまたはPOSTのボディ
+        timeout: リクエストタイムアウト（秒）
 
     Raises:
-        FetchError: On network, HTTP, or timeout errors
+        FetchError: ネットワーク、HTTP、またはタイムアウトエラー時
     """
     logger.info(f"Fetching HTML: url={url}, method={method}, data={data}")
+    
     try:
         if method == 'GET':
-            resp = SESSION.get(url, params=data, headers=HEADERS, timeout=timeout)
+            resp = SESSION.get(url, params=data, timeout=timeout)
         else:
-            resp = SESSION.post(url, data=data, headers=HEADERS, timeout=timeout)
+            resp = SESSION.post(url, data=data, timeout=timeout)
             resp.encoding = resp.apparent_encoding
+        
         resp.raise_for_status()
+        
+    except requests.exceptions.Timeout as e:
+        logger.error(f'Timeout error fetching HTML from {url}: {e}')
+        raise FetchError(f'Request timeout for {url}', ErrorType.TIMEOUT) from e
+    except requests.exceptions.ConnectionError as e:
+        logger.error(f'Connection error fetching HTML from {url}: {e}')
+        raise FetchError(f'Connection failed for {url}', ErrorType.NETWORK) from e
+    except requests.exceptions.HTTPError as e:
+        logger.error(f'HTTP error fetching HTML from {url}: {e}')
+        raise FetchError(f'HTTP error {resp.status_code} for {url}', ErrorType.HTTP) from e
     except requests.exceptions.RequestException as e:
-        logger.error(f'Error fetching HTML from {url}: {e} | method={method} | data={data}')
-        raise FetchError(f'Failed to fetch HTML from {url}') from e
+        logger.error(f'Request error fetching HTML from {url}: {e}')
+        raise FetchError(f'Failed to fetch HTML from {url}', ErrorType.NETWORK) from e
+    
     return BeautifulSoup(resp.text, 'html.parser')
 
+
 def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
-    """
-    Get publication notices for the specified year.
-    """
+    """指定された年の公告通知を取得する。"""
+    year = validate_year_parameter(year)
     logger.info(f"Getting publication notices for year={year}")
+    
     url = f"{DOMAIN}/sel_pubs.php"
     payload = {
         "search_term": year,
@@ -120,110 +237,197 @@ def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
         "search_pubs_type": "none",
         "sort_id": "5"
     }
+    
     try:
         soup = fetch_html(url, "POST", payload)
         notices = parse_notices(soup)
-        logger.info(f"Fetched {len(notices)} notices for year={year}")
+        
         if not notices:
             logger.warning(f"No notices found for year={year}")
+        else:
+            logger.info(f"Fetched {len(notices)} notices for year={year}")
+        
         return notices
     except Exception as e:
         logger.error(f"Exception in _sel_pubs: {e} | year={year}")
         raise
 
+
 def _pubs_dispatcher(notice: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Get publication details for a notice.
-    """
-    logger.info(f"Getting publication details for notice doc_id={notice.get('doc_id')}")
+    """通知の公告詳細を取得する。"""
+    # エラーキーがある場合は直接返す
+    if "error" in notice:
+        return [notice]
+    
+    validate_required_fields(notice, ['doc_id'], 'notice')
+    doc_id = notice['doc_id']
+    
+    logger.info(f"Getting publication details for notice doc_id={doc_id}")
+    
     url = f"{DOMAIN}/pubs_dispatcher.php"
-    payload = {"head_line": "", "doc_id": notice['doc_id']}
+    payload = {"head_line": "", "doc_id": doc_id}
+    
     try:
         soup = fetch_html(url, "POST", payload)
         details = parse_submit(soup)
-        logger.info(f"Fetched {len(details)} details for doc_id={notice.get('doc_id')}")
+        
         if not details:
-            logger.warning(f"No details found for doc_id={notice.get('doc_id')}")
+            details = [{'error': 'No submit found'}]
+            logger.warning(f"No submit details found for doc_id={doc_id}")
+        else:
+            logger.info(f"Fetched {len(details)} details for doc_id={doc_id}")
+        
         return [{**detail, **notice} for detail in details]
     except Exception as e:
         logger.error(f"Exception in _pubs_dispatcher: {e} | notice={notice}")
         raise
 
+
 def _pubs_basic_frame(submit: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Get basic publication information for a submit.
-    """
-    logger.info(f"Getting basic publication info for submit params={submit.get('params')}")
+    """投稿の基本公告情報を取得する。"""
+    # エラーキーがある場合は直接返す
+    if "error" in submit:
+        return [submit]
+    
+    validate_required_fields(submit, ['params'], 'submit')
+    params = submit['params']
+    
+    logger.info(f"Getting basic publication info for submit params={params}")
+    
     url = f"{DOMAIN}/pubs_basic_frame.php"
+    
     try:
         soup = fetch_html(url, "GET", submit['params'])
         details = parse_subject(soup)
-        logger.info(f"Fetched {len(details)} subjects for submit params={submit.get('params')}")
+        
         if not details:
-            logger.warning(f"No subjects found for submit params={submit.get('params')}")
+            details = [{"error": f"No subjects found for submit params={params}"}]
+            logger.warning(f"No subjects found for submit params={params}")
+        else:
+            logger.info(f"Fetched {len(details)} subjects for submit params={params}")
+        
         return [{**detail, **submit} for detail in details]
     except Exception as e:
         logger.error(f"Exception in _pubs_basic_frame: {e} | submit={submit}")
         raise
 
+
 def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Get account details for a subject.
-    """
-    logger.info(f"Getting account details for subject no={subject.get('no')}, form={subject.get('form')}")
-    url = f"{DOMAIN}/" + subject['form']
+    """件名の口座詳細を取得する。"""
+    # エラーキーがある場合は直接返す
+    if "error" in subject:
+        return [subject]
+    
+    validate_required_fields(subject, ['form', 'no'], 'subject')
+    form = subject['form']
+    no = subject['no']
+    
+    logger.info(f"Getting account details for subject no={no}, form={form}")
+    
+    url = f"{DOMAIN}/" + form
     payload = {
-        "r_no": subject['no'],
+        "r_no": no,
         "pn": subject.get('pn', ''),
         "p_id": subject.get('p_id', ''),
         "re": subject.get('re', ''),
         "referer": '0'
     }
+    
     try:
         soup = fetch_html(url, "POST", payload)
         details = parse_accounts(soup)
-        logger.info(f"Fetched {len(details)} accounts for subject no={subject.get('no')}")
+        
         if not details:
-            logger.warning(f"No accounts found for subject no={subject.get('no')}")
+            details = [{"error": f"No accounts found for subject no={no}"}]
+            logger.warning(f"No accounts found for subject no={no}")
+        else:
+            logger.info(f"Fetched {len(details)} accounts for subject no={no}")
+        
         return [{**detail, **subject} for detail in details]
     except Exception as e:
         logger.error(f"Exception in _pubstype_detail: {e} | subject={subject}")
         raise
 
-def fetch(year: str = "near3", max_workers: int = 5) -> List[Dict[str, Any]]:
+
+def fetch(year: str = "near3", max_workers: int = DEFAULT_MAX_WORKERS) -> List[Dict[str, Any]]:
     """
-    Fetch all publication data for the specified year.
+    指定された年のすべての公告データを取得する。
     
     Args:
-        year: Year to fetch data for, or "near3" for latest 3 months
-        max_workers: Maximum number of concurrent threads for parallel processing
-    """
-    logger.info(f"Starting fetch for year={year} with max_workers={max_workers}")
-    try:
-        # Step 1: Get notices
-        notices = _sel_pubs(year)
+        year: データを取得する年、または最新3か月の場合は "near3"
+        max_workers: 並列処理の最大スレッド数
         
-        # Step 2: Get submits with error handling and parallel processing
-        submits = process_items_with_error_handling(notices, _pubs_dispatcher, "notice", max_workers)
+    Returns:
+        完全な情報を含む口座辞書のリスト
+        
+    Raises:
+        ValidationError: 無効なパラメータの場合
+        FetchError: データ取得エラーの場合
+    """
+    year = validate_year_parameter(year)
+    
+    if max_workers < 1:
+        raise ValidationError(f"max_workers must be >= 1, got {max_workers}")
+    
+    logger.info(f"Starting fetch for year={year} with max_workers={max_workers}")
+    
+    try:
+        # ステップ 1: 通知取得
+        notices = _sel_pubs(year)
+        if not notices:
+            logger.warning(f"No notices found for year={year}")
+            return []
+        
+        # ステップ 2: エラーハンドリングと並列処理で投稿取得
+        submits, submits_stats = process_items_with_error_handling(
+            notices, _pubs_dispatcher, "notice", max_workers
+        )
         logger.info(f"Total submits fetched: {len(submits)}")
         
-        # Step 3: Get subjects with error handling and parallel processing
-        subjects = process_items_with_error_handling(submits, _pubs_basic_frame, "submit", max_workers)
+        # ステップ 3: エラーハンドリングと並列処理で件名取得
+        subjects, subjects_stats = process_items_with_error_handling(
+            submits, _pubs_basic_frame, "submit", max_workers
+        )
         logger.info(f"Total subjects fetched: {len(subjects)}")
         
-        # Step 4: Get accounts with error handling and parallel processing
-        accounts = process_items_with_error_handling(subjects, _pubstype_detail, "subject", max_workers)
+        # ステップ 4: エラーハンドリングと並列処理で口座取得
+        accounts, accounts_stats = process_items_with_error_handling(
+            subjects, _pubstype_detail, "subject", max_workers
+        )
         logger.info(f"Total accounts fetched: {len(accounts)}")
         
+        # 処理統計をログ出力
+        logger.info(f"Processing summary for year={year}:")
+        logger.info(f"  Notices: {len(notices)}")
+        logger.info(f"  Submits: {submits_stats.successful}/{submits_stats.total} (success rate: {submits_stats.success_rate:.2%})")
+        logger.info(f"  Subjects: {subjects_stats.successful}/{subjects_stats.total} (success rate: {subjects_stats.success_rate:.2%})")
+        logger.info(f"  Accounts: {accounts_stats.successful}/{accounts_stats.total} (success rate: {accounts_stats.success_rate:.2%})")
+        
         logger.info(f"Fetch completed for year={year}")
+        
         if not accounts:
             logger.warning(f"No accounts fetched for year={year}")
+        
         return accounts
+        
     except Exception as e:
         logger.error(f"Exception in fetch: {e} | year={year}")
         raise
 
 if __name__ == "__main__":
     import pandas as pd
-    df = pd.DataFrame(fetch())
-    df.to_parquet("accounts.parquet", index=False)
+    
+    # ログレベルを設定
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    try:
+        data = fetch()
+        df = pd.DataFrame(data)
+        df.to_parquet("accounts.parquet", index=False)
+        print(f"Successfully saved {len(data)} records to accounts.parquet")
+    except Exception as e:
+        print(f"Error: {e}")
+        raise
