@@ -7,7 +7,6 @@ Japan's Furikome Sagi Relief Act, supporting both full and incremental data extr
 
 from .core import (
     fetch,
-    get_data,
     FetchError,
     ValidationError,
     SagiKozaError,
