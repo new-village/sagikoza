@@ -45,6 +45,7 @@ Call without arguments to get notices from the latest 3 months.
 import sagikoza
 accounts = sagikoza.fetch()
 print(accounts)
+# [{'doc_id': '12345', 'link': '/pubs_basic_frame.php?...', 'id': '...', ...}, ...]
 ```
 
 ### Save data example
@@ -111,10 +112,3 @@ The contents include the payload's value, which is required for accessing other 
 | submits | pubs_dispatcher.php | POST | {"head_line": "", "doc_id": "15362"} | `table:nth-child(9) > tbody > tr > td.6 > a` | `<a href="./pubs_basic_frame.php?inst_code=0153&amp;p_id=05&amp;pn=365597&amp;re=0">（別添）</a>` |
 | subjects | pubs_basic_frame.php | GET | inst_code=0153&p_id=05&pn=365597&re=0 | `table:nth-child(12) > tbody > tr > td:nth-child(1) > input[type=submit]` | `<form method="POST" name="list_form" action="./k_pubstype_04_detail.php" target="_blank"></form><br><input type="submit" name="r_no" value=" 2420-0153-0007 ">` |
 | accounts | k_pubstype_00_detail.php | POST | {"r_no":"+2420-0153-0007+", "pn": "365597", "r_no": "2420-0153-0007", "p_id": "05", "re": "0", "referer": "0"} | | |
-
-# Note
-
-- 支払手続終了（支払い申請がない）
-- 支払手続終了（支払該当者決定を受けた者がない）
-- 支払手続終了（被害回復分配金のすべての支払い等）
-- 被害回復分配金が支払われない（債権額が1,000円未満）

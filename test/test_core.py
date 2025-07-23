@@ -22,6 +22,12 @@ def test_sel_pubs(sel_pubs_html):
             'doc_id': '15362'
         }
         assert result[1] == expected
+        # 指定した辞書が含まれるかどうか
+        expected_without_bracket = {
+            'label': '25年度第03回債権消滅 公告（07）第072号 令和７年５月１日', 
+            'doc_id': '15402'
+        }
+        assert result[100] == expected_without_bracket
 
 def test_sel_pubs_empty():
     with patch("sagikoza.core.fetch_html") as mock_fetch_html:
@@ -211,3 +217,24 @@ def test_fetch_empty():
     with patch("sagikoza.core._sel_pubs", return_value=[]):
         result = core.fetch("near3")
         assert result == []
+
+@pytest.fixture
+def pubs_basic_frame_pagination_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubs_basic_frame_pagination.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_create_pagination_list_with_pagination(pubs_basic_frame_pagination_html):
+    from sagikoza.parser.pubs_basic_frame import create_pagination_list
+    soup = BeautifulSoup(pubs_basic_frame_pagination_html, "html.parser")
+    result = create_pagination_list(soup)
+    # 2から23までの数字のリストが返される（range(2, 24)は2から23まで）
+    expected = list(range(2, 24))
+    assert result == expected
+
+def test_create_pagination_list_no_pagination(pubs_basic_frame_html):
+    from sagikoza.parser.pubs_basic_frame import create_pagination_list
+    soup = BeautifulSoup(pubs_basic_frame_html, "html.parser")
+    result = create_pagination_list(soup)
+    # ページネーションがない場合は空のリストが返される
+    assert result == []

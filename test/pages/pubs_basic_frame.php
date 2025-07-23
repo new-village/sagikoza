@@ -140,10 +140,7 @@
                 <tbody><tr>
                     <td>
                         <a>[ 1 件 ～ 100 件]</a>
-                        <a>[全  162 件]</a><b>1</b>
-<a href="javascript:pageSubmit(2)">2</a>
-<a href="javascript:pageSubmit(2)">次へ</a>
-<a href="javascript:pageSubmit(2)">最後へ</a>
+                        <a>[全  100 件]</a><b>1</b>
                     </td>
                 </tr>
             </tbody></table>        <table style="{ border: 1px #333333 solid; width: 800px; border-collapse: collapse; empty-cells: show; }">
@@ -1763,10 +1760,7 @@
                 <tbody><tr>
                     <td>
                         <a>[ 1 件 ～ 100 件]</a>
-                        <a>[全  162 件]</a><b>1</b>
-<a href="javascript:pageSubmit(2)">2</a>
-<a href="javascript:pageSubmit(2)">次へ</a>
-<a href="javascript:pageSubmit(2)">最後へ</a>
+                        <a>[全  100 件]</a><b>1</b>
                     </td>
                 </tr>
             </tbody></table>

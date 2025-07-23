@@ -18,7 +18,7 @@ import requests
 
 from sagikoza.parser.sel_pubs import parse_notices
 from sagikoza.parser.pubs_dispatcher import parse_submit
-from sagikoza.parser.pubs_basic_frame import parse_subject
+from sagikoza.parser.pubs_basic_frame import parse_subject, create_pagination_list
 from sagikoza.parser.pubstype_detail import parse_accounts
 
 # Constants
@@ -299,7 +299,11 @@ def _pubs_basic_frame(submit: Dict[str, Any]) -> List[Dict[str, Any]]:
     try:
         soup = fetch_html(url, "GET", submit['params'])
         details = parse_subject(soup)
-        
+        # Pagination handling
+        for page in create_pagination_list(soup):
+            soup = fetch_html(url, "GET", submit['params'] + f"&page={page}")
+            details.extend(parse_subject(soup))
+
         if not details:
             details = [{"error": f"No subjects found for submit params={params}"}]
             logger.warning(f"No subjects found for submit params={params}")

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from typing import List, Dict, Any
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -38,4 +39,36 @@ def parse_subject(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     
     except Exception as e:
         logger.error(f"Error parsing subjects: {e}")
+        return []
+
+def create_pagination_list(soup: BeautifulSoup) -> List[int]:
+    """
+    Create a list of pagination parameters from the HTML.
+    
+    Args:
+        soup: BeautifulSoup object containing the HTML
+        
+    Returns:
+        List of integers representing pagination pages
+    """
+    try:
+        # Find pagination links in table.con elements
+        tables = soup.select('table.con')
+        for table in tables:
+            a_tags = table.select('a')
+            pagesubmit_tags = [a for a in a_tags if a.get('href') and 'pageSubmit' in a.get('href')]
+            
+            if pagesubmit_tags:
+                # Get the last pageSubmit link and extract the page number
+                last_a = pagesubmit_tags[-1]
+                href = last_a.get('href', '')
+                match = re.search(r'pageSubmit\((\d+)\)', href)
+                if match:
+                    max_page = int(match.group(1))
+                    return list(range(2, max_page + 1))
+        
+        logger.debug("No pagination links found")
+        return []
+    except Exception as e:
+        logger.error(f"Error creating pagination list: {e}")
         return []
