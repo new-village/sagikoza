@@ -210,16 +210,16 @@ def fetch_html(
         resp.raise_for_status()
         
     except requests.exceptions.Timeout as e:
-        logger.error(f'Timeout error fetching HTML from {url}: {e}')
+        logger.warning(f'Timeout error fetching HTML from {url}: {e}')
         raise FetchError(f'Request timeout for {url}', ErrorType.TIMEOUT) from e
     except requests.exceptions.ConnectionError as e:
-        logger.error(f'Connection error fetching HTML from {url}: {e}')
+        logger.warning(f'Connection error fetching HTML from {url}: {e}')
         raise FetchError(f'Connection failed for {url}', ErrorType.NETWORK) from e
     except requests.exceptions.HTTPError as e:
-        logger.error(f'HTTP error fetching HTML from {url}: {e}')
+        logger.warning(f'HTTP error fetching HTML from {url}: {e}')
         raise FetchError(f'HTTP error {resp.status_code} for {url}', ErrorType.HTTP) from e
     except requests.exceptions.RequestException as e:
-        logger.error(f'Request error fetching HTML from {url}: {e}')
+        logger.warning(f'Request error fetching HTML from {url}: {e}')
         raise FetchError(f'Failed to fetch HTML from {url}', ErrorType.NETWORK) from e
     
     return BeautifulSoup(resp.text, 'html.parser')
@@ -419,7 +419,7 @@ if __name__ == "__main__":
     
     # ログレベルを設定
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.ERROR,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
