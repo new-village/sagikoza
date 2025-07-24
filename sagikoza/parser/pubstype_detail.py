@@ -69,6 +69,37 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 return parts[0], parts[1]
             else:
                 return text, ''
+        
+        def split_name_with_parentheses(name_text: str) -> tuple[str, str]:
+            """
+            Split name text with parentheses to extract katakana and alias.
+            
+            Args:
+                name_text: Raw name text that may contain parentheses with katakana
+                
+            Returns:
+                Tuple of (name, name_alias)
+            """
+            import re
+            
+            if not name_text:
+                return '', ''
+            
+            text = name_text.strip().replace('\u3000', ' ')
+            
+            # Look for parentheses pattern
+            match = re.search(r'（([^）]+)）', text)
+            if match:
+                parentheses_content = match.group(1).strip()
+                # Check if content is katakana and more than one character
+                if len(parentheses_content) > 1 and re.match(r'^[ァ-ヾ\s]+$', parentheses_content):
+                    # Extract katakana as name, rest as name_alias
+                    name = parentheses_content
+                    name_alias = text.replace(match.group(0), '').strip()
+                    return name, name_alias
+            
+            # If no valid parentheses content, return original as name
+            return text, ''
 
         accounts = []
         for c in containers:
@@ -99,6 +130,16 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 
                 account['name'] = safe_get_text(c.select_one('table:nth-of-type(4) tr:nth-of-type(6) td.data'), strip=True).replace('\u3000', ' ')
                 account['name_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True).replace('\u3000', ' ')
+                
+                # Check if name contains parentheses with katakana and split if needed
+                raw_name = safe_get_text(c.select_one('table:nth-of-type(4) tr:nth-of-type(6) td.data'), strip=True)
+                split_name, split_name_alias = split_name_with_parentheses(raw_name)
+                if split_name_alias:  # If split was successful
+                    account['name'] = split_name
+                    account['name_alias'] = split_name_alias
+                else:
+                    account['name'] = raw_name.replace('\u3000', ' ')
+                    account['name_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True).replace('\u3000', ' ')
                 account['amount'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
                 account['effective_from'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(2) td:nth-of-type(3)'), strip=True)
                 account['effective_to'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(2) td:nth-of-type(5)'), strip=True)
@@ -108,30 +149,84 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 account['notes'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(7) td.data'), strip=True)            
             elif c.select_one('table:nth-of-type(2) tr:nth-of-type(5)') is None:
                 # For JP Bank Type 2
-                # Handle combined account_type with potential branch_code_alias
-                raw_account_type = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(2) td.data'), strip=True)
-                extracted_branch_code_alias, clean_account_type = split_account_type(raw_account_type)
-                
-                # If we extracted data from account_type field, use it; otherwise use existing logic
-                if extracted_branch_code_alias:
-                    account['branch_code_alias'] = extracted_branch_code_alias
-                    account['account_type'] = clean_account_type
+                if c.select_one('table:nth-of-type(2) tr:nth-of-type(4)'):
+                    # Check if this is the special case with only 4 rows in table 2 (通帳記号/通帳番号)
+                    table2_rows = c.select('table:nth-of-type(2) tr')
+                    if len(table2_rows) == 4:
+                        # Special case: ゆうちょ銀行 with 通帳記号/通帳番号
+                        account['branch_code_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(2) td.data'), strip=True)
+                        account['account_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(3) td.data'), strip=True)
+                        
+                        # Check if name contains parentheses with katakana and split if needed
+                        raw_name = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True)
+                        split_name, split_name_alias = split_name_with_parentheses(raw_name)
+                        if split_name_alias:  # If split was successful
+                            account['name'] = split_name
+                            account['name_alias'] = split_name_alias
+                        else:
+                            account['name'] = raw_name.replace('\u3000', ' ')
+                            account['name_alias'] = raw_name.replace('\u3000', ' ')
+                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                        account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td.data2'), strip=True)
+                    else:
+                        # Normal JP Bank Type 2 case
+                        # Handle combined account_type with potential branch_code_alias
+                        raw_account_type = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(2) td.data'), strip=True)
+                        extracted_branch_code_alias, clean_account_type = split_account_type(raw_account_type)
+                        
+                        # If we extracted data from account_type field, use it; otherwise use existing logic
+                        if extracted_branch_code_alias:
+                            account['branch_code_alias'] = extracted_branch_code_alias
+                            account['account_type'] = clean_account_type
+                        else:
+                            account['branch_code_alias'] = raw_account_type
+                            account['account_type'] = ''
+                        
+                        # Handle combined account number with potential account_alias
+                        raw_account = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(3) td.data'), strip=True)
+                        clean_account, extracted_account_alias = split_account_number(raw_account)
+                        account['account'] = clean_account
+                        if extracted_account_alias:
+                            account['account_alias'] = extracted_account_alias
+                        else:
+                            account['account_alias'] = raw_account
+                        
+                        # Check if name contains parentheses with katakana and split if needed
+                        raw_name = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True)
+                        split_name, split_name_alias = split_name_with_parentheses(raw_name)
+                        if split_name_alias:  # If split was successful
+                            account['name'] = split_name
+                            account['name_alias'] = split_name_alias
+                        else:
+                            account['name'] = raw_name.replace('\u3000', ' ')
+                            account['name_alias'] = raw_name.replace('\u3000', ' ')
+                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                        account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True)
                 else:
-                    account['branch_code_alias'] = raw_account_type
-                    account['account_type'] = ''
-                
-                # Handle combined account number with potential account_alias
-                raw_account = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(3) td.data'), strip=True)
-                clean_account, extracted_account_alias = split_account_number(raw_account)
-                account['account'] = clean_account
-                if extracted_account_alias:
-                    account['account_alias'] = extracted_account_alias
-                else:
-                    account['account_alias'] = raw_account
-                
-                account['name_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True).replace('\u3000', ' ')
-                account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
-                account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True)
+                    # Other case without 4th row
+                    # Handle combined account_type with potential branch_code_alias
+                    raw_account_type = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(2) td.data'), strip=True)
+                    extracted_branch_code_alias, clean_account_type = split_account_type(raw_account_type)
+                    
+                    # If we extracted data from account_type field, use it; otherwise use existing logic
+                    if extracted_branch_code_alias:
+                        account['branch_code_alias'] = extracted_branch_code_alias
+                        account['account_type'] = clean_account_type
+                    else:
+                        account['branch_code_alias'] = raw_account_type
+                        account['account_type'] = ''
+                    
+                    # Handle combined account number with potential account_alias
+                    raw_account = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(3) td.data'), strip=True)
+                    clean_account, extracted_account_alias = split_account_number(raw_account)
+                    account['account'] = clean_account
+                    if extracted_account_alias:
+                        account['account_alias'] = extracted_account_alias
+                    else:
+                        account['account_alias'] = raw_account
+                    
+                    account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                    account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True)
             else:
                 # For other banks
                 account['branch_name'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(2) td.data'), strip=True)
@@ -151,7 +246,14 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 if extracted_account_alias:
                     account['account_alias'] = extracted_account_alias
                 
-                account['name'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(6) td.data'), strip=True).replace('\u3000', ' ')
+                # Check if name contains parentheses with katakana and split if needed
+                raw_name = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(6) td.data'), strip=True)
+                split_name, split_name_alias = split_name_with_parentheses(raw_name)
+                if split_name_alias:  # If split was successful
+                    account['name'] = split_name
+                    account['name_alias'] = split_name_alias
+                else:
+                    account['name'] = raw_name.replace('\u3000', ' ')
                 account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
                 account['effective_from'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td:nth-of-type(3)'), strip=True)
                 account['effective_to'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td:nth-of-type(5)'), strip=True)

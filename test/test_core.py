@@ -219,6 +219,133 @@ def test_pubstype_detail_2(pubstype_detail_2_html):
         }
         assert result[1] == expected
 
+@pytest.fixture
+def pubstype_detail_3_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubstype_detail_3.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubstype_detail_3(pubstype_detail_3_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubstype_detail_3_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2508-0001-0020",
+            "pn": "372858",
+            "p_id": "01",
+            "re": "0"
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'role': '対象預金口座等に係る', 
+            'bank_name': 'みずほ銀行', 
+            'branch_name': '綾瀬支店', 
+            'branch_code': '179', 
+            'account_type': '普通預金', 
+            'account': '3075533', 
+            'name': 'ホー ミン ヴー', 
+            'amount': '670', 
+            'effective_from': '2025年7月17日 0時', 
+            'effective_to': '2025年9月16日 15時', 
+            'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
+            'payment_period': '2025年01月頃', 
+            'suspend_date': '2025年1月31日', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2508-0001-0020', 
+            'pn': '372858', 
+            'p_id': '01', 
+            're': '0',
+            'name_alias': 'ＨＯ ＭＩＮＨ ＶＵ'
+        }
+        assert result[0] == expected
+
+@pytest.fixture
+def pubstype_detail_4_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubstype_detail_4.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubstype_detail_4(pubstype_detail_4_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubstype_detail_4_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_10_detail.php",
+            "no": "2409-9900-0467",
+            "pn": "365843",
+            "p_id": "11",
+            "re": "0"
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'role': '対象預金口座等に係る', 
+            'bank_name': 'ゆうちょ銀行', 
+            'branch_code_alias': '17470', 
+            'account_alias': '94921311', 
+            'name': 'ツルゾノ レイ', 
+            'amount': '15,145', 
+            'suspend_date': '2024年10月16日', 
+            'form': 'k_pubstype_10_detail.php', 
+            'no': '2409-9900-0467', 
+            'pn': '365843', 
+            'p_id': '11', 
+            're': '0',
+            'name_alias': '鶴園 零'
+        }
+        assert result[0] == expected
+
+@pytest.fixture
+def pubstype_detail_5_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubstype_detail_5.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubstype_detail_5(pubstype_detail_5_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubstype_detail_5_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2506-0010-0010",
+            "pn": "369660",
+            "p_id": "01",
+            "re": "0"
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 1
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'role': '対象預金口座等に係る', 
+            'bank_name': 'りそな銀行', 
+            'branch_name': '茗荷谷支店', 
+            'branch_code': '461', 
+            'account_type': '普通預金', 
+            'account': '1331433', 
+            'name': 'ミツイスミトモカイジヨウカサイホケン（カ）ダイリテン', 
+            'amount': '500,000', 
+            'effective_from': '2025年6月17日 0時', 
+            'effective_to': '2025年8月18日 15時', 
+            'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
+            'payment_period': '2003年～2024年10月', 
+            'suspend_date': '2024年10月2日', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2506-0010-0010', 
+            'pn': '369660', 
+            'p_id': '01', 
+            're': '0'
+        }
+        assert result[0] == expected
+
 def test_pubstype_detail_empty():
     with patch("sagikoza.core.fetch_html") as mock_fetch_html:
         mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
