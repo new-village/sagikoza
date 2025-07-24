@@ -140,7 +140,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 else:
                     account['name'] = raw_name.replace('\u3000', ' ')
                     account['name_alias'] = safe_get_text(c.select_one('table:nth-of-type(2) tr:nth-of-type(4) td.data'), strip=True).replace('\u3000', ' ')
-                account['amount'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                account['amount'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '').replace(',', '')
                 account['effective_from'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(2) td:nth-of-type(3)'), strip=True)
                 account['effective_to'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(2) td:nth-of-type(5)'), strip=True)
                 account['effective_method'] = safe_get_text(c.select_one('table:nth-of-type(5) tr:nth-of-type(3) td.data'), strip=True)
@@ -166,7 +166,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                         else:
                             account['name'] = raw_name.replace('\u3000', ' ')
                             account['name_alias'] = raw_name.replace('\u3000', ' ')
-                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '').replace(',', '')
                         account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td.data2'), strip=True)
                     else:
                         # Normal JP Bank Type 2 case
@@ -200,7 +200,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                         else:
                             account['name'] = raw_name.replace('\u3000', ' ')
                             account['name_alias'] = raw_name.replace('\u3000', ' ')
-                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                        account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '').replace(',', '')
                         account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True)
                 else:
                     # Other case without 4th row
@@ -225,7 +225,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                     else:
                         account['account_alias'] = raw_account
                     
-                    account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                    account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '').replace(',', '')
                     account['suspend_date'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True)
             else:
                 # For other banks
@@ -254,7 +254,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                     account['name_alias'] = split_name_alias
                 else:
                     account['name'] = raw_name.replace('\u3000', ' ')
-                account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '')
+                account['amount'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(1) td.data2'), strip=True).replace('★', '').replace(',', '')
                 account['effective_from'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td:nth-of-type(3)'), strip=True)
                 account['effective_to'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(2) td:nth-of-type(5)'), strip=True)
                 account['effective_method'] = safe_get_text(c.select_one('table:nth-of-type(3) tr:nth-of-type(3) td.data'), strip=True)
