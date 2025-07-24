@@ -18,13 +18,19 @@ def test_sel_pubs(sel_pubs_html):
         assert len(result) == 195
         # 指定した辞書が含まれるかどうか
         expected = {
-            'label': '（24年度第20回）権利行使の届出等 公告（07）第043号 令和７年４月２３日', 
+            'notice_round': '24年度第20回', 
+            'notice_type': '権利行使の届出等',
+            'notice_number': '公告（07）第043号',
+            'notice_date': '令和７年４月２３日',
             'doc_id': '15362'
         }
         assert result[1] == expected
         # 指定した辞書が含まれるかどうか
         expected_without_bracket = {
-            'label': '25年度第03回債権消滅 公告（07）第072号 令和７年５月１日', 
+            'notice_round': '25年度第03回', 
+            'notice_type': '債権消滅',
+            'notice_number': '公告（07）第072号',
+            'notice_date': '令和７年５月１日',
             'doc_id': '15402'
         }
         assert result[100] == expected_without_bracket
