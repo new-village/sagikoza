@@ -150,10 +150,10 @@ def process_items_with_error_handling(
     failed = 0
     
     if not items:
-        logger.info(f"No {item_name}s to process")
+        logger.debug(f"No {item_name}s to process")
         return results, ProcessingStats(0, 0, 0)
     
-    logger.info(f"Processing {len(items)} {item_name}s with {max_workers} workers")
+    logger.debug(f"Processing {len(items)} {item_name}s with {max_workers} workers")
     
     # ThreadPoolExecutorを使用して並列処理
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -174,7 +174,7 @@ def process_items_with_error_handling(
                 logger.error(f"Error processing {item_name}: {item} | {e}")
     
     stats = ProcessingStats(len(items), successful, failed)
-    logger.info(f"Processed {stats.total} {item_name}s: {stats.successful} successful, {stats.failed} failed (success rate: {stats.success_rate:.2%})")
+    logger.debug(f"Processed {stats.total} {item_name}s: {stats.successful} successful, {stats.failed} failed (success rate: {stats.success_rate:.2%})")
     
     return results, stats
 
@@ -198,7 +198,7 @@ def fetch_html(
     Raises:
         FetchError: ネットワーク、HTTP、またはタイムアウトエラー時
     """
-    logger.info(f"Fetching HTML: url={url}, method={method}, data={data}")
+    logger.debug(f"Fetching HTML: url={url}, method={method}, data={data}")
     
     try:
         if method == 'GET':
@@ -228,8 +228,8 @@ def fetch_html(
 def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
     """指定された年の公告通知を取得する。"""
     year = validate_year_parameter(year)
-    logger.info(f"Getting publication notices for year={year}")
-    
+    logger.debug(f"Getting publication notices for year={year}")
+
     url = f"{DOMAIN}/sel_pubs.php"
     payload = {
         "search_term": year,
@@ -245,8 +245,8 @@ def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
         if not notices:
             logger.warning(f"No notices found for year={year}")
         else:
-            logger.info(f"Fetched {len(notices)} notices for year={year}")
-        
+            logger.debug(f"Fetched {len(notices)} notices for year={year}")
+
         return notices
     except Exception as e:
         logger.error(f"Exception in _sel_pubs: {e} | year={year}")
@@ -262,7 +262,7 @@ def _pubs_dispatcher(notice: Dict[str, Any]) -> List[Dict[str, Any]]:
     validate_required_fields(notice, ['doc_id'], 'notice')
     doc_id = notice['doc_id']
     
-    logger.info(f"Getting publication details for notice doc_id={doc_id}")
+    logger.debug(f"Getting publication details for notice doc_id={doc_id}")
     
     url = f"{DOMAIN}/pubs_dispatcher.php"
     payload = {"head_line": "", "doc_id": doc_id}
@@ -275,7 +275,7 @@ def _pubs_dispatcher(notice: Dict[str, Any]) -> List[Dict[str, Any]]:
             details = [{'error': 'No submit found'}]
             logger.warning(f"No submit details found for doc_id={doc_id}")
         else:
-            logger.info(f"Fetched {len(details)} details for doc_id={doc_id}")
+            logger.debug(f"Fetched {len(details)} details for doc_id={doc_id}")
         
         return [{**detail, **notice} for detail in details]
     except Exception as e:
@@ -292,7 +292,7 @@ def _pubs_basic_frame(submit: Dict[str, Any]) -> List[Dict[str, Any]]:
     validate_required_fields(submit, ['params'], 'submit')
     params = submit['params']
     
-    logger.info(f"Getting basic publication info for submit params={params}")
+    logger.debug(f"Getting basic publication info for submit params={params}")
     
     url = f"{DOMAIN}/pubs_basic_frame.php"
     
@@ -308,7 +308,7 @@ def _pubs_basic_frame(submit: Dict[str, Any]) -> List[Dict[str, Any]]:
             details = [{"error": f"No subjects found for submit params={params}"}]
             logger.warning(f"No subjects found for submit params={params}")
         else:
-            logger.info(f"Fetched {len(details)} subjects for submit params={params}")
+            logger.debug(f"Fetched {len(details)} subjects for submit params={params}")
         
         return [{**detail, **submit} for detail in details]
     except Exception as e:
@@ -326,7 +326,7 @@ def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
     form = subject['form']
     no = subject['no']
     
-    logger.info(f"Getting account details for subject no={no}, form={form}")
+    logger.debug(f"Getting account details for subject no={no}, form={form}")
     
     url = f"{DOMAIN}/" + form
     payload = {
@@ -345,7 +345,7 @@ def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
             details = [{"error": f"No accounts found for subject no={no}"}]
             logger.warning(f"No accounts found for subject no={no}")
         else:
-            logger.info(f"Fetched {len(details)} accounts for subject no={no}")
+            logger.debug(f"Fetched {len(details)} accounts for subject no={no}")
         
         return [{**detail, **subject} for detail in details]
     except Exception as e:
