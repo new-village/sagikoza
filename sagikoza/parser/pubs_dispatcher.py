@@ -38,7 +38,7 @@ def parse_submit(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 params['params'] = href
                 submit.append(params)
 
-        logger.info(f"Parsed {len(submit)} submit details from HTML")
+        logger.debug(f"Parsed {len(submit)} submit details from HTML")
         return submit
     
     except Exception as e:

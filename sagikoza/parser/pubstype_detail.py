@@ -73,7 +73,7 @@ def parse_accounts(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             if any(account.values()):
                 accounts.append(account)
 
-        logger.info(f"Parsed {len(accounts)} accounts from HTML")
+        logger.debug(f"Parsed {len(accounts)} accounts from HTML")
         return accounts
     
     except Exception as e:

@@ -39,7 +39,7 @@ def parse_notices(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 parsed_notice['doc_id'] = doc_id
                 notices.append(parsed_notice)
 
-        logger.info(f"Parsed {len(notices)} notices from HTML")
+        logger.debug(f"Parsed {len(notices)} notices from HTML")
         return notices
     
     except Exception as e:

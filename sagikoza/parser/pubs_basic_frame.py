@@ -34,7 +34,7 @@ def parse_subject(soup: BeautifulSoup) -> List[Dict[str, Any]]:
         subjects = [{'form': form, 'no': input} for form, input in unique_subjects]
         subjects.sort(key=lambda x: x['no'])
 
-        logger.info(f"Parsed {len(subjects)} subjects from HTML")
+        logger.debug(f"Parsed {len(subjects)} subjects from HTML")
         return subjects
     
     except Exception as e:
