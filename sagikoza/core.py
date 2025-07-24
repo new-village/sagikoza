@@ -12,6 +12,8 @@ from functools import wraps
 from time import sleep
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
+import json
 
 from bs4 import BeautifulSoup
 import requests
@@ -102,6 +104,50 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str], c
     if missing_fields:
         context_str = f" in {context}" if context else ""
         raise ValidationError(f"Missing required fields {missing_fields}{context_str}: {data}")
+
+
+def generate_uid(record: Dict[str, Any]) -> str:
+    """
+    レコード全体からユニークIDを生成する。
+    
+    Args:
+        record: ハッシュ化するレコード辞書
+        
+    Returns:
+        str: 16進数のMD5ハッシュ値
+    """
+    # レコードの辞書をJSON文字列に変換（キーをソートして一貫性を保つ）
+    record_str = json.dumps(record, sort_keys=True, ensure_ascii=False)
+    
+    # MD5ハッシュを生成
+    hash_object = hashlib.md5(record_str.encode('utf-8'))
+    uid = hash_object.hexdigest()
+    
+    logger.debug(f"Generated unique ID {uid} for record")
+    return uid
+
+
+def add_uids(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    レコードのリストに各レコードのユニークIDを追加する。
+    
+    Args:
+        records: ユニークIDを追加するレコードのリスト
+        
+    Returns:
+        List[Dict[str, Any]]: ユニークIDが追加されたレコードのリスト
+    """
+    if not records:
+        return records
+    
+    logger.debug(f"Adding unique IDs to {len(records)} records")
+    
+    for record in records:
+        # ユニークIDを生成して追加
+        record['uid'] = generate_uid(record)
+    
+    logger.debug(f"Successfully added unique IDs to {len(records)} records")
+    return records
 
 
 def retry_on_error(max_retries: int = DEFAULT_MAX_RETRIES, delay: float = DEFAULT_RETRY_DELAY):
@@ -400,6 +446,10 @@ def fetch(year: str = "near3", max_workers: int = DEFAULT_MAX_WORKERS) -> List[D
         )
         logger.info(f"Total accounts fetched: {len(accounts)}")
         
+        # ステップ 5: ユニークID付与
+        accounts_with_ids = add_uids(accounts)
+        logger.info(f"Added unique IDs to {len(accounts_with_ids)} accounts")
+        
         # 処理統計をログ出力
         logger.info(f"Processing summary for year={year}:")
         logger.info(f"  Notices: {len(notices)}")
@@ -409,10 +459,10 @@ def fetch(year: str = "near3", max_workers: int = DEFAULT_MAX_WORKERS) -> List[D
         
         logger.info(f"Fetch completed for year={year}")
         
-        if not accounts:
+        if not accounts_with_ids:
             logger.warning(f"No accounts fetched for year={year}")
         
-        return accounts
+        return accounts_with_ids
         
     except Exception as e:
         logger.error(f"Exception in fetch: {e} | year={year}")
