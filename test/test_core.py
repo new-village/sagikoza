@@ -173,6 +173,52 @@ def test_pubstype_detail(pubstype_detail_html):
         }
         assert result[0] == expected
 
+@pytest.fixture
+def pubstype_detail_2_html():
+    # テスト用HTMLを読み込む
+    with open("test/pages/pubstype_detail_2.php", encoding="utf-8") as f:
+        return f.read()
+
+def test_pubstype_detail_2(pubstype_detail_2_html):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(pubstype_detail_2_html, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2505-0543-0040",
+            "pn": "369281",
+            "p_id": "01",
+            "re": "0"
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 3
+        # 指定した辞書が含まれるかどうか
+        expected = {
+            'role': '資金の移転元となった預金口座等に係る', 
+            'bank_name': 'ゆうちょ銀行', 
+            'branch_name': '四〇八', 
+            'branch_code': '408', 
+            'account_type': '普通預金', 
+            'account': '7555041', 
+            'name': 'ミヤモト マサユキ', 
+            'amount': '', 
+            'effective_from': '', 
+            'effective_to': '', 
+            'effective_method': '', 
+            'payment_period': '2025年2月', 
+            'suspend_date': '', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2505-0543-0040', 
+            'pn': '369281', 
+            'p_id': '01', 
+            're': '0',
+            'branch_code_alias': '14000',
+            'account_alias': '755504'
+        }
+        assert result[1] == expected
+
 def test_pubstype_detail_empty():
     with patch("sagikoza.core.fetch_html") as mock_fetch_html:
         mock_fetch_html.return_value = BeautifulSoup("<html></html>", "html.parser")
