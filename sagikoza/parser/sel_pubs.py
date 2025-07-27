@@ -61,49 +61,16 @@ def _parse_label(label: str) -> Dict[str, str]:
     # パターン例: 25年度第03回債権消滅 公告（07）第072号 令和７年５月１日
     
     # 括弧付きパターンを先に試す
-    pattern1 = r'（([^）]+)）([^公]*?)\s*公告（([^）]+)）第(\d+)号\s+(.+)'
-    match = re.match(pattern1, label.strip())
-    
+    pattern = r'^（?(\d{2}年度第\d{2}回)）?(.+) (公告（\d{2}）第\d{3}号) (令和[０-９]{1,2}年[０-９]{1,2}月[０-９]{1,2}日)'
+    match = re.match(pattern, label.strip())
+
     if match:
-        notice_round = match.group(1)
-        notice_type = match.group(2).strip()
-        notice_number = f"公告（{match.group(3)}）第{match.group(4)}号"
-        notice_date = match.group(5).strip()
-        
-        return {
-            'notice_round': notice_round,
-            'notice_type': notice_type,
-            'notice_number': notice_number,
-            'notice_date': notice_date
-        }
-    
-    # 括弧なしパターンを試す
-    pattern2 = r'([^公]+?)\s*公告（([^）]+)）第(\d+)号\s+(.+)'
-    match = re.match(pattern2, label.strip())
-    
-    if match:
-        # 年度回数と通知種類を分離
-        round_and_type = match.group(1).strip()
-        notice_number = f"公告（{match.group(2)}）第{match.group(3)}号"
-        notice_date = match.group(4).strip()
-        
-        # 年度回数と通知種類を分離する正規表現
-        round_type_pattern = r'(\d+年度第\d+回)(.+)'
-        round_type_match = re.match(round_type_pattern, round_and_type)
-        
-        if round_type_match:
-            notice_round = round_type_match.group(1)
-            notice_type = round_type_match.group(2).strip()
-        else:
-            notice_round = round_and_type
-            notice_type = ''
-        
-        return {
-            'notice_round': notice_round,
-            'notice_type': notice_type,
-            'notice_number': notice_number,
-            'notice_date': notice_date
-        }
+        label = {}
+        label['notice_round'] = match.group(1)  # 年度回数
+        label['notice_type'] = match.group(2).strip()  # 通知種類
+        label['notice_number'] = match.group(3)  # 通知番号
+        label['notice_date'] = match.group(4).strip()  # 通知日
+        return label
     
     # パースに失敗した場合は元のラベルを保持
     logger.warning(f"Failed to parse label: {label}")

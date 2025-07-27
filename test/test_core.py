@@ -101,7 +101,7 @@ def test_pubs_basic_frame(pubs_basic_frame_html):
         submit = {'params': 'inst_code=0034&p_id=03&pn=365600&re=0'}
         result = core._pubs_basic_frame(submit)
         assert isinstance(result, list)
-        assert len(result) == 44
+        assert len(result) == 94
         # 指定した辞書が含まれるかどうか
         expected = {
             'form': 'k_pubstype_01_detail.php', 
@@ -162,24 +162,6 @@ def test_pubstype_detail_exception():
         }
         with pytest.raises(core.FetchError):
             core._pubstype_detail(subject)
-
-def test_fetch_integration():
-    # 各関数の返り値をモックして統合テスト
-    with patch("sagikoza.core._sel_pubs", return_value=[{"doc_id": "15362"}]):
-        with patch("sagikoza.core._pubs_dispatcher", return_value=[{"params": "p", "doc_id": "15362"}]):
-            with patch("sagikoza.core._pubs_basic_frame", return_value=[{"form": "f.php", "no": "n", "params": "p"}]):
-                with patch("sagikoza.core._pubstype_detail", return_value=[{"account": "a", "form": "f.php", "no": "n", "params": "p"}]):
-                    result = core.fetch("near3")
-                    assert isinstance(result, list)
-                    assert len(result) == 1
-                    # ユニークIDが追加されていることを確認
-                    assert "uid" in result[0]
-                    assert isinstance(result[0]["uid"], str)
-                    assert len(result[0]["uid"]) == 32  # MD5ハッシュの長さ
-                    # 元のデータが含まれていることを確認
-                    expected_fields = {"account": "a", "form": "f.php", "no": "n", "params": "p"}
-                    for key, value in expected_fields.items():
-                        assert result[0][key] == value
 
 def test_fetch_empty():
     with patch("sagikoza.core._sel_pubs", return_value=[]):

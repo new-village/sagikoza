@@ -403,10 +403,10 @@ def fetch(year: str = "near3", normalize: bool = False, max_workers: int = DEFAU
         
         # ステップ 5: 取得データの正規化
         if normalize:
-            records, records_stats = process_items_with_error_handling(
-                accounts, normalize_accounts, "accounts", max_workers
+            accounts, records_stats = process_items_with_error_handling(
+                accounts, normalize_accounts, "accounts", max_workers * 2
             )
-            logger.info(f"Total accounts fetched: {len(records)}")
+            logger.info(f"Total normalized records: {len(accounts)}")
 
         # 処理統計をログ出力
         logger.info(f"Processing summary for year={year}:")
@@ -414,7 +414,8 @@ def fetch(year: str = "near3", normalize: bool = False, max_workers: int = DEFAU
         logger.info(f"  Submits: {submits_stats.successful}/{submits_stats.total} (success rate: {submits_stats.success_rate:.2%})")
         logger.info(f"  Subjects: {subjects_stats.successful}/{subjects_stats.total} (success rate: {subjects_stats.success_rate:.2%})")
         logger.info(f"  Accounts: {accounts_stats.successful}/{accounts_stats.total} (success rate: {accounts_stats.success_rate:.2%})")
-        logger.info(f"  Normalized: {records_stats.successful}/{records_stats.total} (success rate: {records_stats.success_rate:.2%})")
+        if normalize:
+            logger.info(f"  Normalized: {records_stats.successful}/{records_stats.total} (success rate: {records_stats.success_rate:.2%})")
 
         logger.info(f"Fetch completed for year={year}")
 
@@ -430,11 +431,11 @@ if __name__ == "__main__":
     # ログレベルを設定
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format='%(asctime)s [%(levelname)s]: %(message)s'
     )
     
     try:
-        data = fetch()
+        data = fetch("near3", normalize=True)
         df = pd.DataFrame(data)
         df.to_parquet("accounts.parquet", index=False)
         print(f"Successfully saved {len(data)} records to accounts.parquet")

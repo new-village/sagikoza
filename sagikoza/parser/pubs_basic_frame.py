@@ -20,18 +20,13 @@ def parse_subject(soup: BeautifulSoup) -> List[Dict[str, Any]]:
         ValueError: HTMLパースエラーの場合
     """
     try:
-        forms = soup.find_all('form', attrs={'name': 'list_form'})
-        form_vals = [form.get('action').replace('./', '') for form in forms if form.has_attr('action')]
-
+        form = soup.find('form', attrs={'name': 'list_form'}).get('action').replace('./', '')
+    
         inputs = soup.find_all('input', attrs={'name': 'r_no'})
-        input_vals = [input.get('value').strip() for input in inputs if input.has_attr('value')]
-
-        if len(form_vals) != len(input_vals):
-            logger.warning(f"Form count ({len(form_vals)}) doesn't match input count ({len(input_vals)})")
+        input_vals = list({input.get('value').strip() for input in inputs if input.has_attr('value')})
 
         # Ensure we have unique pairs of form and input values
-        unique_subjects = set((form, input) for form, input in zip(form_vals, input_vals) if form and input)
-        subjects = [{'form': form, 'no': input} for form, input in unique_subjects]
+        subjects = [{'form': form, 'no': input} for input in input_vals]
         subjects.sort(key=lambda x: x['no'])
 
         logger.debug(f"Parsed {len(subjects)} subjects from HTML")

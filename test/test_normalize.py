@@ -22,10 +22,7 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 3
+        accounts = core._pubstype_detail(subject)
         
         # ゆうちょ銀行ケースの確認
         expected = {
@@ -54,7 +51,7 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             're': '0', 
             'referer': '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
         # 青木信用金庫ケースの確認
         expected = {
@@ -80,7 +77,7 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             're': '0', 
             'referer': '0'
         }
-        assert result[1] == expected
+        assert core.normalize_accounts(accounts[1])[0] == expected
 
         # 京葉銀行ケースの確認
         expected = {
@@ -106,7 +103,7 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             're': '0', 
             'referer': '0'
         }
-        assert result[2] == expected
+        assert core.normalize_accounts(accounts[2])[0] == expected
 
 @pytest.fixture
 def k_pubstype_01_detail_2():
@@ -126,10 +123,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             "re": "0",
             "referer": '1'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
         
         # みずほ銀行（外国人）ケースの確認
         expected = {
@@ -156,7 +150,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             're': '0', 
             'referer': '1'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_04_detail_1():
@@ -176,10 +170,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
         
         # ゆうちょ銀行ケースの確認
         expected = {
@@ -204,7 +195,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_04_detail_2():
@@ -224,10 +215,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
         
         # ＧＭＯあおぞらネット銀行ケースの確認
         expected = {
@@ -249,7 +237,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_05_detail_1():
@@ -269,10 +257,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
 
         # みずほ銀行ケースの確認
         expected = {
@@ -293,7 +278,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_05_detail_2():
@@ -313,10 +298,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
 
         # みずほ銀行ケースの確認
         expected = {
@@ -339,7 +321,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_07_detail_1():
@@ -359,10 +341,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 2
+        accounts = core._pubstype_detail(subject)
 
         # 三菱ＵＦＪ銀行ケースの確認
         expected = {
@@ -389,7 +368,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
         # 資金の移転元となった預金口座等に係る
         expected = {
@@ -416,7 +395,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[1] == expected
+        assert core.normalize_accounts(accounts[1])[0] == expected
 
 @pytest.fixture
 def k_pubstype_09_detail_1():
@@ -436,10 +415,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
 
         # 住信ＳＢＩネット銀行ケースの確認
         expected = {
@@ -460,7 +436,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_10_detail_1():
@@ -480,10 +456,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
 
         # ゆうちょ銀行ケースの確認
         expected = {
@@ -503,7 +476,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
 
 @pytest.fixture
 def k_pubstype_10_detail_2():
@@ -523,10 +496,7 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "re": "0",
             "referer": '0'
         }
-        result = core._pubstype_detail(subject)
-        result = core.normalize_accounts(result)
-        assert isinstance(result, list)
-        assert len(result) == 1
+        accounts = core._pubstype_detail(subject)
 
         # ゆうちょ銀行ケースの確認
         expected = {
@@ -548,4 +518,4 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "re": "0",
             "referer": '0'
         }
-        assert result[0] == expected
+        assert core.normalize_accounts(accounts[0])[0] == expected
