@@ -10,7 +10,7 @@ def k_pubstype_01_detail_1():
     with open("test/pages/k_pubstype_01_detail_1.php", encoding="utf-8") as f:
         return f.read()
 
-def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
+def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
     with patch("sagikoza.core.fetch_html") as mock_fetch_html:
         mock_soup = BeautifulSoup(k_pubstype_01_detail_1, "html.parser")
         mock_fetch_html.return_value = mock_soup
@@ -23,6 +23,7 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 3
         
@@ -41,7 +42,7 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'effective_to': '2025年8月4日 15時', 
             'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
             'payment_period': '２０２４年１０月', 
-            'suspend_date': '2024年10月21日', 
+            'suspend_date': '2024-10-21', 
             'notes': '', 
             'branch_code_jpb': '12250',
             'account_jpb': '30846481',
@@ -126,6 +127,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             "referer": '1'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
         
@@ -138,14 +140,15 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             'branch_code': '728', 
             'account_type': '普通預金', 
             'account': '3056028', 
-            'name': 'ＰＨＡＭ ＶＡＮ ＭＡＮＨ （フアン ヴアン マイン）', 
+            'name': 'フアン ヴアン マイン', 
             'amount': '2599', 
             'effective_from': '2025年6月17日 0時', 
             'effective_to': '2025年8月18日 15時', 
             'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
             'payment_period': '2024年08月頃', 
-            'suspend_date': '2024年8月16日', 
+            'suspend_date': '2024-08-16', 
             'notes': '', 
+            'name_alias': 'PHAM VAN MANH',
             'form': 'k_pubstype_01_detail.php', 
             'no': '2506-0001-0894', 
             'pn': '375331', 
@@ -174,6 +177,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
         
@@ -188,11 +192,11 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             'account': '6211644', 
             'name': 'フャン ティ カイン リー', 
             'amount': '602827', 
-            'notice_date': '2025年5月1日',
+            'notice_date': '2025-05-01',
             'notes': '法第六条第一項（権利行使の届出等あり）',
             'branch_code_jpb': '15150',
             'account_jpb': '62116441',
-            'name_alias': 'ＰＨＡＮ ＴＨＩ ＫＨＡＮＨ ＬＹ',
+            'name_alias': 'PHAN THI KHANH LY',
             "form": "k_pubstype_04_detail.php",
             "no": "2503-9900-0475",
             "pn": "368470",
@@ -221,6 +225,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
         
@@ -233,9 +238,9 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             'branch_code': '125', 
             'account_type': '普通預金', 
             'account': '1121426', 
-            'name': 'カ）フアイナンシヤルラグジユアリ－', 
+            'name': 'カ）フアイナンシヤルラグジユアリー', 
             'amount': '8676', 
-            'notice_date': '2025年7月1日',
+            'notice_date': '2025-07-01',
             'notes': '法第六条第一項（権利行使の届出等あり）',
             "form": "k_pubstype_04_detail.php",
             "no": "2507-0310-0051",
@@ -265,6 +270,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
@@ -273,12 +279,13 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             'uid': 'ff68656c1dfdaf90b4cee00bf3c129cfd67ca71088682b2e605990ad5f02cfd3',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
-            'name': 'ＢＵＩ ＶＡＮ ＢＩＮＨ（ブイ ウ゛ァン ビン）', 
+            'name': 'ブイ ヴァン ビン', 
             'amount': '773', 
-            'notice_date': '2025年5月1日',
-            'delete_date': '2025年7月1日',
+            'notice_date': '2025-05-01',
+            'delete_date': '2025-07-01',
             'branch_code_jpb': '19730',
             'account_jpb': '16099061',
+            'name_alias': 'BUI VAN BINH',
             "form": "k_pubstype_05_detail.php",
             "no": "2503-9900-0011",
             "pn": "373302",
@@ -307,6 +314,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
@@ -319,10 +327,11 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             'branch_code': '223', 
             'account_type': '普通預金', 
             'account': '3075321', 
-            'name': 'ＰＲＥＳＥＮＴＡＣＩＯＮ ＡＬＩＣＥ ＶＩＣＴＯＲＩＡ （プレセンタシオン アリス ヴイクトリア）', 
+            'name': 'プレセンタシオン アリス ヴイクトリア', 
             'amount': '151797', 
-            'notice_date': '2025年4月16日',
-            'delete_date': '2025年6月16日',
+            'notice_date': '2025-04-16',
+            'delete_date': '2025-06-16',
+            'name_alias': 'PRESENTACION ALICE VICTORIA',
             "form": "k_pubstype_05_detail.php",
             "no": "2502-0001-0034",
             "pn": "371209",
@@ -351,6 +360,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 2
 
@@ -369,7 +379,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             'effective_to': '2025年10月15日 15時', 
             'effective_method': '被害回復分配金支払申請書を店頭に提出又は郵送（詳細は照会先へご連絡下さい）', 
             'payment_period': '2024年5月頃', 
-            'suspend_date': '2025年7月1日', 
+            'suspend_date': '2025-07-01', 
             'reason': 'オレオレ詐欺',
             'notes': '', 
             "form": "k_pubstype_07_detail.php",
@@ -390,7 +400,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             'branch_code': '329', 
             'account_type': '普通預金', 
             'account': '4157068', 
-            'name': 'ＥＢＡＲＤＡＬＯＺＡ ＶＥＲＥＧＩＬＩＯ', 
+            'name': 'EBARDALOZA VEREGILIO', 
             'amount': '', 
             'effective_from': '', 
             'effective_to': '', 
@@ -427,6 +437,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
@@ -470,6 +481,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
@@ -478,11 +490,12 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             'uid': 'b7095c44bfb9f0e0dadcf7d6bce8236472e2448ec4f81bddc4685d46495b3779',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
-            'name': 'ＴＲＡＮ ＶＡＮ ＣＡＮＨ（チャン ウ゛ァン カイン）', 
+            'name': 'チャン ヴァン カイン', 
             'amount': '20153', 
-            'notice_date': '2025年1月16日',
+            'notice_date': '2025-01-16',
             'branch_code_jpb': '10330',
             'account_jpb': '89857121',
+            'name_alias': 'TRAN VAN CANH',
             "form": "k_pubstype_10_detail.php",
             "no": "2415-9900-0114",
             "pn": "371720",
@@ -511,6 +524,7 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
+        result = core.normalize_accounts(result)
         assert isinstance(result, list)
         assert len(result) == 1
 
@@ -523,9 +537,10 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             'branch_code': '203', 
             'account_type': '普通預金', 
             'account': '3118190', 
-            'name': 'ＮＧＵＹＥＮ ＴＨＩ ＨＯＡＩ ＮＨＩＥＮ （グエン テイ ホアイ ニエン）', 
+            'name': 'グエン テイ ホアイ ニエン', 
             'amount': '450709', 
-            'notice_date': '2024年12月2日',
+            'notice_date': '2024-12-02',
+            'name_alias': 'NGUYEN THI HOAI NHIEN',
             "form": "k_pubstype_10_detail.php",
             "no": "2412-0001-0028",
             "pn": "369725",

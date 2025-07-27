@@ -6,14 +6,12 @@ Supports both full data extraction and incremental updates.
 """
 
 import logging
-from typing import Literal, Any, Dict, List, Optional, Union
+from typing import Literal, Any, Dict, List, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import wraps
 from time import sleep
 from dataclasses import dataclass
 from enum import Enum
-import hashlib
-import json
 
 from bs4 import BeautifulSoup
 import requests
@@ -22,6 +20,7 @@ from sagikoza.parser.sel_pubs import parse_notices
 from sagikoza.parser.pubs_dispatcher import parse_submit
 from sagikoza.parser.pubs_basic_frame import parse_subject, create_pagination_list
 from sagikoza.parser.pubstype_detail import parse_accounts
+from sagikoza.normalize import normalize_accounts
 
 # Constants
 DOMAIN = "https://furikomesagi.dic.go.jp"
@@ -104,50 +103,6 @@ def validate_required_fields(data: Dict[str, Any], required_fields: List[str], c
     if missing_fields:
         context_str = f" in {context}" if context else ""
         raise ValidationError(f"Missing required fields {missing_fields}{context_str}: {data}")
-
-
-def generate_uid(record: Dict[str, Any]) -> str:
-    """
-    レコード全体からユニークIDを生成する。
-    
-    Args:
-        record: ハッシュ化するレコード辞書
-        
-    Returns:
-        str: 16進数のMD5ハッシュ値
-    """
-    # レコードの辞書をJSON文字列に変換（キーをソートして一貫性を保つ）
-    record_str = json.dumps(record, sort_keys=True, ensure_ascii=False)
-    
-    # MD5ハッシュを生成
-    hash_object = hashlib.md5(record_str.encode('utf-8'))
-    uid = hash_object.hexdigest()
-    
-    logger.debug(f"Generated unique ID {uid} for record")
-    return uid
-
-
-def add_uids(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    レコードのリストに各レコードのユニークIDを追加する。
-    
-    Args:
-        records: ユニークIDを追加するレコードのリスト
-        
-    Returns:
-        List[Dict[str, Any]]: ユニークIDが追加されたレコードのリスト
-    """
-    if not records:
-        return records
-    
-    logger.debug(f"Adding unique IDs to {len(records)} records")
-    
-    for record in records:
-        # ユニークIDを生成して追加
-        record['uid'] = generate_uid(record)
-    
-    logger.debug(f"Successfully added unique IDs to {len(records)} records")
-    return records
 
 
 def retry_on_error(max_retries: int = DEFAULT_MAX_RETRIES, delay: float = DEFAULT_RETRY_DELAY):
@@ -399,7 +354,7 @@ def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
         raise
 
 
-def fetch(year: str = "near3", max_workers: int = DEFAULT_MAX_WORKERS) -> List[Dict[str, Any]]:
+def fetch(year: str = "near3", normalize: bool = False, max_workers: int = DEFAULT_MAX_WORKERS) -> List[Dict[str, Any]]:
     """
     指定された年のすべての公告データを取得する。
     
@@ -446,24 +401,25 @@ def fetch(year: str = "near3", max_workers: int = DEFAULT_MAX_WORKERS) -> List[D
         )
         logger.info(f"Total accounts fetched: {len(accounts)}")
         
-        # ステップ 5: ユニークID付与
-        accounts_with_ids = add_uids(accounts)
-        logger.info(f"Added unique IDs to {len(accounts_with_ids)} accounts")
-        
+        # ステップ 5: 取得データの正規化
+        if normalize:
+            records, records_stats = process_items_with_error_handling(
+                accounts, normalize_accounts, "accounts", max_workers
+            )
+            logger.info(f"Total accounts fetched: {len(records)}")
+
         # 処理統計をログ出力
         logger.info(f"Processing summary for year={year}:")
         logger.info(f"  Notices: {len(notices)}")
         logger.info(f"  Submits: {submits_stats.successful}/{submits_stats.total} (success rate: {submits_stats.success_rate:.2%})")
         logger.info(f"  Subjects: {subjects_stats.successful}/{subjects_stats.total} (success rate: {subjects_stats.success_rate:.2%})")
         logger.info(f"  Accounts: {accounts_stats.successful}/{accounts_stats.total} (success rate: {accounts_stats.success_rate:.2%})")
-        
+        logger.info(f"  Normalized: {records_stats.successful}/{records_stats.total} (success rate: {records_stats.success_rate:.2%})")
+
         logger.info(f"Fetch completed for year={year}")
-        
-        if not accounts_with_ids:
-            logger.warning(f"No accounts fetched for year={year}")
-        
-        return accounts_with_ids
-        
+
+        return accounts
+
     except Exception as e:
         logger.error(f"Exception in fetch: {e} | year={year}")
         raise
@@ -473,7 +429,7 @@ if __name__ == "__main__":
     
     # ログレベルを設定
     logging.basicConfig(
-        level=logging.ERROR,
+        level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     

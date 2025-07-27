@@ -7,6 +7,8 @@ Supports different page types with specific parsing logic for each type.
 
 from typing import List, Dict, Any
 from bs4 import BeautifulSoup
+import hashlib
+import json
 
 
 def parse_accounts(soup: BeautifulSoup, form: str) -> List[Dict[str, Any]]:
@@ -21,22 +23,23 @@ def parse_accounts(soup: BeautifulSoup, form: str) -> List[Dict[str, Any]]:
     """
     try:
         if form == 'k_pubstype_01_detail.php':
-            return _parse_k_pubstype_01(soup)
+            accounts = _parse_k_pubstype_01(soup)
         elif form == 'k_pubstype_04_detail.php':
-            return _parse_k_pubstype_04(soup)
+            accounts = _parse_k_pubstype_04(soup)
         elif form == 'k_pubstype_05_detail.php':
-            return _parse_k_pubstype_05(soup)
+            accounts = _parse_k_pubstype_05(soup)
         elif form == 'k_pubstype_07_detail.php':
-            return _parse_k_pubstype_07(soup)
+            accounts = _parse_k_pubstype_07(soup)
         elif form == 'k_pubstype_09_detail.php':
-            return _parse_k_pubstype_09(soup)
+            accounts = _parse_k_pubstype_09(soup)
         elif form == 'k_pubstype_10_detail.php':
-            return _parse_k_pubstype_10(soup)
+            accounts = _parse_k_pubstype_10(soup)
         else:
-            return [{"error": f"Unknown form type: {form}"}]
+            accounts = [{"error": f"Unknown form type: {form}"}]
     except Exception as e:
         return [{"error": f"Failed to parse account details: {str(e)}"}]
 
+    return _generate_uid(accounts)
 
 def _parse_k_pubstype_01(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     """Parse k_pubstype_01_detail pages - 消滅手続が開始された対象預金等債権"""
@@ -74,7 +77,7 @@ def _parse_k_pubstype_01(soup: BeautifulSoup) -> List[Dict[str, Any]]:
         account['notes'] = _parse(container, 'table:nth-of-type(3) tr:nth-of-type(7) td.data')
 
         accounts.append(account)
-
+    
     return accounts
 
 def _parse_k_pubstype_04(soup: BeautifulSoup) -> List[Dict[str, Any]]:
@@ -258,3 +261,11 @@ def _parse(soup: BeautifulSoup, selector: str) -> str:
         return role.lstrip('■★').strip()
     else:
         return ''
+
+def _generate_uid(accounts: List[Dict[str, Any]]) -> str:
+    for account in accounts:
+        if 'error' not in account:
+            """Generate a unique identifier for an account."""
+            account_json = json.dumps(account, sort_keys=True, ensure_ascii=False)
+            account['uid'] = hashlib.sha256(account_json.encode('utf-8')).hexdigest()
+    return accounts
