@@ -43,16 +43,16 @@
         <td align="right" class="cat3"><img src="./images/right_arrow.gif" border="0" alt="">&nbsp;<b>照会先</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">〒100-8793&nbsp;東京都千代田区大手町2-3-1</td>
+        <td align="right" class="cat3">〒100-8176&nbsp;東京都千代田区大手町１－５－５</td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>ゆうちょ銀行</b></td>
+        <td align="right" class="cat3"><b>みずほ銀行</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>送付先：コンプライアンス統括部　連絡先：ゆうちょコールセンター</b></td>
+        <td align="right" class="cat3"><b>リテール・事業法人コンプライアンス部マネー・ローンダリング対策オフィス</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">電話0120-108420</td>
+        <td align="right" class="cat3">電話0120-233-862</td>
     </tr>
 </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
@@ -62,7 +62,7 @@
 </tbody></table>
 <table width="740" border="0" cellpadding="0" cellspacing="0">
     <tbody><tr>
-        <td align="center" valign="middle" height="25" class="cat3"><b>被害回復分配金の額を決定表に記載した消滅預金等債権</b></td>
+        <td align="center" valign="middle" height="25" class="cat3"><b>消滅した対象預金等債権</b></td>
     </tr>
 </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
@@ -76,39 +76,54 @@
                 <tbody><tr>
                     <td width="520" class="cat5">■対象預金口座等に係る</td>
                     <td width="80" align="center" class="head2">No.</td>
-                    <td width="140" align="right" class="data"><b>2409-9900-0467</b></td>
+                    <td width="140" align="right" class="data"><b>2502-0001-0034</b></td>
                 </tr>
             </tbody></table>
             <img src="./images/spacer.gif" width="1" height="2" border="0">
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
                 <td width="220" class="head">　金融機関</td>
-                <td width="520" align="left" class="data">　ゆうちょ銀行</td>
+                <td width="520" align="left" class="data">　みずほ銀行</td>
             </tr>
 
             <tr>
-                <td class="head">　通帳記号</td>
-                <td align="left" class="data">　17470</td>
+                <td class="head">　店舗</td>
+                <td align="left" class="data">　春日部支店</td>
             </tr>
             <tr>
-                <td class="head">　通帳番号</td>
-                <td align="left" class="data">　94921311</td>
+                <td class="head">　コード</td>
+                <td align="left" class="data">　223</td>
+            </tr>
+
+            <tr>
+                <td class="head">　預金等の種別</td>
+                <td align="left" class="data">　普通預金</td>
+            </tr>
+            <tr>
+                <td class="head">　口座番号</td>
+                <td align="left" class="data">　3075321</td>
             </tr>
             <tr>
                 <td class="head">　名義人の氏名又は名称</td>
-                <td align="left" class="data">　鶴園　零（ツルゾノ　レイ）</td>
+                <td align="left" class="data">　ＰＲＥＳＥＮＴＡＣＩＯＮ　ＡＬＩＣＥ　ＶＩＣＴＯＲＩＡ　（プレセンタシオン　アリス　ヴイクトリア）</td>
             </tr>
         </tbody></table>
 
         <img src="./images/spacer.gif" width="1" height="2" border="0">
+
+
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
-                <td width="221" class="head">　消滅預金等債権の額(円)</td>
-                <td width="516" align="left" class="data2">　15,145</td>
+                <td width="221" class="head">　対象預金等債権の額(円)</td>
+                <td width="516" align="left" class="data2">　151,797</td>
             </tr>
             <tr>
-                <td width="221" class="head">　法第七条の公告年月日<br>　(消滅預金等債権)</td>
-                <td width="516" align="left" class="data2">　2024年10月16日</td>
+                <td width="221" class="head">　消滅手続開始公告年月日</td>
+                <td width="516" align="left" class="data">　2025年4月16日</td>
+            </tr>
+            <tr>
+                <td width="221" class="head">　消滅年月日</td>
+                <td width="516" align="left" class="data">　2025年6月16日</td>
             </tr>
         </tbody></table>
         <table border="0" cellspacing="0" cellpadding="0">

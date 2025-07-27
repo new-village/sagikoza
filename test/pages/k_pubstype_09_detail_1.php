@@ -28,7 +28,6 @@
 </head>
 <body bgcolor="#FFFFFF" leftmargin="0" marginheight="10" marginwidth="0" topmargin="0">
 <center>
-
 <table width="740" height="75" border="0" cellpadding="0" cellspacing="0">
     <tbody><tr><td><a href="https://furikomesagi.dic.go.jp/" target="_top"><img src="images/logo_white_01.gif" width="335" height="29" alt="" border="0"></a></td>
         <td rowspan="2">
@@ -44,16 +43,16 @@
         <td align="right" class="cat3"><img src="./images/right_arrow.gif" border="0" alt="">&nbsp;<b>照会先</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">〒100-8176&nbsp;東京都千代田区大手町１－５－５</td>
+        <td align="right" class="cat3">〒164-0001&nbsp;東京都中野区中野二丁目２４番１１号　住友不動産中野駅前ビル　１５階</td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>みずほ銀行</b></td>
+        <td align="right" class="cat3"><b>住信ＳＢＩネット銀行</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>リテール・事業法人コンプライアンス部マネー・ローンダリング対策オフィス</b></td>
+        <td align="right" class="cat3"><b>金融犯罪対策部</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">電話0120-233-862</td>
+        <td align="right" class="cat3">電話0367379162</td>
     </tr>
 </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
@@ -63,9 +62,7 @@
 </tbody></table>
 <table width="740" border="0" cellpadding="0" cellspacing="0">
     <tbody><tr>
-        <td align="center" valign="middle" height="25" class="cat3">
-            <b>消滅手続が開始された対象預金等債権</b>
-        </td>
+        <td align="center" valign="middle" height="25" class="cat3"><b>決定書の送付に代わる公告<br>住信ＳＢＩネット銀行は本店等に決定書を保管し、いつでも申請人に交付致します。</b></td>
     </tr>
 </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
@@ -73,30 +70,29 @@
         <td><img src="./images/spacer.gif" width="1" height="5" border="0" alt=""></td>
     </tr>
 </tbody></table>
-
     <div class="container">
         <img src="./images/spacer.gif" width="1" height="1" border="0">
             <table style="{ width: 740px; border-collapse: collapse; empty-cells: hide; }">
                 <tbody><tr>
                     <td width="520" class="cat5">■対象預金口座等に係る</td>
                     <td width="80" align="center" class="head2">No.</td>
-                    <td width="140" align="right" class="data"><b>2508-0001-0020</b></td>
+                    <td width="140" align="right" class="data"><b>2411-0038-0042</b></td>
                 </tr>
             </tbody></table>
             <img src="./images/spacer.gif" width="1" height="2" border="0">
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
                 <td width="220" class="head">　金融機関</td>
-                <td width="520" align="left" class="data">　みずほ銀行</td>
+                <td width="520" align="left" class="data">　住信ＳＢＩネット銀行</td>
             </tr>
 
             <tr>
                 <td class="head">　店舗</td>
-                <td align="left" class="data">　綾瀬支店</td>
+                <td align="left" class="data">　法人第一支店</td>
             </tr>
             <tr>
                 <td class="head">　コード</td>
-                <td align="left" class="data">　179</td>
+                <td align="left" class="data">　106</td>
             </tr>
 
             <tr>
@@ -105,44 +101,22 @@
             </tr>
             <tr>
                 <td class="head">　口座番号</td>
-                <td align="left" class="data">　3075533</td>
+                <td align="left" class="data">　2088276</td>
             </tr>
             <tr>
                 <td class="head">　名義人の氏名又は名称</td>
-                <td align="left" class="data">　ＨＯ　ＭＩＮＨ　ＶＵ　（ホー　ミン　ヴー）</td>
+                <td align="left" class="data">　ド）　エース</td>
             </tr>
         </tbody></table>
 
         <img src="./images/spacer.gif" width="1" height="2" border="0">
-
-
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
-                <td width="223" class="head">　対象預金等債権の額(円)</td>
-                <td width="514" colspan="4" align="left" class="data2">　670</td>
+                <td width="221" class="head">　消滅預金等債権の額(円)</td>
+                <td width="516" align="left" class="data2">　237,019</td>
             </tr>
             <tr>
-                <td width="223" class="head">　権利行使の届出等に係る期間</td>
-                <td width="50" align="center" class="head">開始</td>
-                <td width="206" align="left" class="data">　2025年7月17日 0時</td>
-                <td width="50" align="center" class="head">満了</td>
-                <td width="206" align="left" class="data">　2025年9月16日 15時</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">　権利行使の届出の方法</td>
-                <td width="514" colspan="4" align="left" class="data">　所定の届出書を提出（詳細は照会先へご連絡下さい）</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">
-　振込み時期                </td>
-                <td width="514" colspan="4" align="left" class="data">　2025年01月頃</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">　取引停止等の措置時期</td>
-                <td width="514" colspan="4" align="left" class="data">　2025年1月31日</td>
-            </tr>
-            <tr>
-                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／消滅手続終了に係る事項</td>
+                <td width="738" colspan="2" align="center" class="head">「決定書送付に代わる公告が無効」に係る事項</td>
             </tr>
             <tr height="75">
                 <td width="738" colspan="5" align="left" class="data">   </td>
@@ -154,18 +128,11 @@
             </tr>
         </tbody></table>
     </div>
-    <table width="740" border="0" cellspacing="0" cellpadding="0">
-        <tbody><tr>
-            <td align="left" class="cat4">★は、当該対象預金等債権の消滅までに利息が加算されて、当該債権の額が増加する可能性のあるもの。</td>
-        </tr>
-    </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
     <tbody><tr>
         <td><img src="./images/spacer.gif" width="1" height="5" border="0" alt=""></td>
     </tr>
 </tbody></table>
-
-
 <table border="0" cellspacing="0" cellpadding="2" width="740">
     <tbody><tr>
         <td align="center" bgcolor="#a1bcff"><a href="javascript:window.close();"><img src="./images/close.gif" border="0" alt="このウィンドウを閉じる"></a></td>

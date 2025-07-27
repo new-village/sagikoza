@@ -28,7 +28,6 @@
 </head>
 <body bgcolor="#FFFFFF" leftmargin="0" marginheight="10" marginwidth="0" topmargin="0">
 <center>
-
 <table width="740" height="75" border="0" cellpadding="0" cellspacing="0">
     <tbody><tr><td><a href="https://furikomesagi.dic.go.jp/" target="_top"><img src="images/logo_white_01.gif" width="335" height="29" alt="" border="0"></a></td>
         <td rowspan="2">
@@ -44,16 +43,16 @@
         <td align="right" class="cat3"><img src="./images/right_arrow.gif" border="0" alt="">&nbsp;<b>照会先</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">〒460-0003&nbsp;愛知県名古屋市中区錦三丁目19番１７号</td>
+        <td align="right" class="cat3">〒105-0014&nbsp;東京都港区芝２－４－３</td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>名古屋銀行</b></td>
+        <td align="right" class="cat3"><b>三菱ＵＦＪ銀行</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3"><b>業務部預金事務グループ</b></td>
+        <td align="right" class="cat3"><b>振り込め詐欺救済法照会ダイヤル</b></td>
     </tr>
     <tr>
-        <td align="right" class="cat3">電話052-962-7092</td>
+        <td align="right" class="cat3">電話0120-860-413</td>
     </tr>
 </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">
@@ -64,7 +63,7 @@
 <table width="740" border="0" cellpadding="0" cellspacing="0">
     <tbody><tr>
         <td align="center" valign="middle" height="25" class="cat3">
-            <b>消滅手続が開始された対象預金等債権</b>
+            <b>被害回復分配金の支払手続が開始された消滅預金等債権</b>
             <div style="{ width:520 ;}"><b>【対象預金口座等が法第二条第四項第二号に掲げる預金口座等である場合で、（資金の移転元となった）他の金融機関より法第四条第三項の規定による通知を受けたとき】</b></div>
         </td>
     </tr>
@@ -74,30 +73,29 @@
         <td><img src="./images/spacer.gif" width="1" height="5" border="0" alt=""></td>
     </tr>
 </tbody></table>
-
     <div class="container">
         <img src="./images/spacer.gif" width="1" height="1" border="0">
             <table style="{ width: 740px; border-collapse: collapse; empty-cells: hide; }">
                 <tbody><tr>
                     <td width="520" class="cat5">■対象預金口座等に係る</td>
                     <td width="80" align="center" class="head2">No.</td>
-                    <td width="140" align="right" class="data"><b>2505-0543-0040</b></td>
+                    <td width="140" align="right" class="data"><b>2502-0005-0027</b></td>
                 </tr>
             </tbody></table>
             <img src="./images/spacer.gif" width="1" height="2" border="0">
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
                 <td width="220" class="head">　金融機関</td>
-                <td width="520" align="left" class="data">　名古屋銀行</td>
+                <td width="520" align="left" class="data">　三菱ＵＦＪ銀行</td>
             </tr>
 
             <tr>
                 <td class="head">　店舗</td>
-                <td align="left" class="data">　安城支店</td>
+                <td align="left" class="data">　町田支店</td>
             </tr>
             <tr>
                 <td class="head">　コード</td>
-                <td align="left" class="data">　287</td>
+                <td align="left" class="data">　228</td>
             </tr>
 
             <tr>
@@ -106,44 +104,47 @@
             </tr>
             <tr>
                 <td class="head">　口座番号</td>
-                <td align="left" class="data">　3438687</td>
+                <td align="left" class="data">　2549964</td>
             </tr>
             <tr>
                 <td class="head">　名義人の氏名又は名称</td>
-                <td align="left" class="data">　サワイ　ケイコ</td>
+                <td align="left" class="data">　グエン ダン ビン</td>
             </tr>
         </tbody></table>
 
         <img src="./images/spacer.gif" width="1" height="2" border="0">
-
-
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
-                <td width="223" class="head">　対象預金等債権の額(円)</td>
-                <td width="514" colspan="4" align="left" class="data2">　3,021</td>
+                <td width="223" class="head">　消滅預金等債権の額(円)</td>
+                <td width="514" colspan="4" align="left" class="data2">　22,004</td>
             </tr>
             <tr>
-                <td width="223" class="head">　権利行使の届出等に係る期間</td>
+                <td width="223" class="head">　支払申請期間</td>
                 <td width="50" align="center" class="head">開始</td>
-                <td width="206" align="left" class="data">　2025年6月3日 0時</td>
+                <td width="206" align="left" class="data">　2025年7月17日 0時</td>
                 <td width="50" align="center" class="head">満了</td>
-                <td width="206" align="left" class="data">　2025年8月4日 15時</td>
+                <td width="206" align="left" class="data">　2025年10月15日 15時</td>
             </tr>
             <tr>
-                <td width="223" class="head">　権利行使の届出の方法</td>
-                <td width="514" colspan="4" align="left" class="data">　所定の届出書を提出（詳細は照会先へご連絡下さい）</td>
+                <td width="223" class="head">　分配金支払の申請方法</td>
+                <td width="514" colspan="4" align="left" class="data">　被害回復分配金支払申請書を店頭に提出又は郵送（詳細は照会先へご連絡下さい）</td>
             </tr>
             <tr>
-                <td width="223" class="head">
+                <td width="221" class="head">
 　移転元の振込み時期                </td>
-                <td width="514" colspan="4" align="left" class="data">　2025年2月</td>
+                <td width="516" colspan="4" align="left" class="data">　2024年5月頃</td>
             </tr>
             <tr>
-                <td width="223" class="head">　取引停止等の措置時期</td>
-                <td width="514" colspan="4" align="left" class="data">　2025年2月20日</td>
+                <td width="221" class="head">　法第七条の公告年月日<br>　（消滅預金等債権）</td>
+                <td width="516" colspan="4" align="left" class="data">　2025年7月1日</td>
             </tr>
             <tr>
-                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／消滅手続終了に係る事項</td>
+                <td width="221" class="head">
+　移転元の<br>　振込利用犯罪行為の概要                </td>
+                <td width="516" colspan="4" align="left" class="data">　オレオレ詐欺</td>
+            </tr>
+            <tr>
+                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／分配金支払手続終了に係る事項</td>
             </tr>
             <tr height="75">
                 <td width="738" colspan="5" align="left" class="data">   </td>
@@ -155,157 +156,78 @@
             </tr>
         </tbody></table>
     </div>
-
     <div class="container">
         <img src="./images/spacer.gif" width="1" height="1" border="0">
             <table style="{ width: 740px; border-collapse: collapse; empty-cells: hide; }">
                 <tbody><tr>
                     <td width="520" class="cat5">■資金の移転元となった預金口座等に係る</td>
                     <td width="80" align="center" class="head2">No.</td>
-                    <td width="140" align="right" class="data"><b>2505-0543-0040</b></td>
+                    <td width="140" align="right" class="data"><b>2502-0005-0027</b></td>
                 </tr>
             </tbody></table>
             <img src="./images/spacer.gif" width="1" height="2" border="0">
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
                 <td width="220" class="head">　金融機関</td>
-                <td width="520" align="left" class="data">　ゆうちょ銀行</td>
+                <td width="520" align="left" class="data">　みずほ銀行</td>
             </tr>
 
             <tr>
                 <td class="head">　店舗</td>
-                <td align="left" class="data">　四〇八</td>
+                <td align="left" class="data">　柏支店</td>
             </tr>
             <tr>
                 <td class="head">　コード</td>
-                <td align="left" class="data">　408</td>
+                <td align="left" class="data">　329</td>
             </tr>
 
             <tr>
                 <td class="head">　預金等の種別</td>
-                <td align="left" class="data">　14000　　　　普通預金</td>
+                <td align="left" class="data">　普通預金</td>
             </tr>
             <tr>
                 <td class="head">　口座番号</td>
-                <td align="left" class="data">　7555041 755504</td>
+                <td align="left" class="data">　4157068</td>
             </tr>
             <tr>
                 <td class="head">　名義人の氏名又は名称</td>
-                <td align="left" class="data">　ミヤモト　マサユキ</td>
+                <td align="left" class="data">　ＥＢＡＲＤＡＬＯＺＡ　ＶＥＲＥＧＩＬＩＯ</td>
             </tr>
         </tbody></table>
 
         <img src="./images/spacer.gif" width="1" height="2" border="0">
-
-
         <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
             <tbody><tr>
-                <td width="223" class="head">　対象預金等債権の額(円)</td>
+                <td width="223" class="head">　消滅預金等債権の額(円)</td>
                 <td width="514" colspan="4" align="left" class="data2">　</td>
             </tr>
             <tr>
-                <td width="223" class="head">　権利行使の届出等に係る期間</td>
+                <td width="223" class="head">　支払申請期間</td>
                 <td width="50" align="center" class="head">開始</td>
                 <td width="206" align="left" class="data">　 </td>
                 <td width="50" align="center" class="head">満了</td>
                 <td width="206" align="left" class="data">　 </td>
             </tr>
             <tr>
-                <td width="223" class="head">　権利行使の届出の方法</td>
+                <td width="223" class="head">　分配金支払の申請方法</td>
                 <td width="514" colspan="4" align="left" class="data">　</td>
             </tr>
             <tr>
-                <td width="223" class="head">
+                <td width="221" class="head">
 　移転元の振込み時期                </td>
-                <td width="514" colspan="4" align="left" class="data">　2025年2月</td>
+                <td width="516" colspan="4" align="left" class="data">　2024年5月頃</td>
             </tr>
             <tr>
-                <td width="223" class="head">　取引停止等の措置時期</td>
-                <td width="514" colspan="4" align="left" class="data">　</td>
+                <td width="221" class="head">　法第七条の公告年月日<br>　（消滅預金等債権）</td>
+                <td width="516" colspan="4" align="left" class="data">　</td>
             </tr>
             <tr>
-                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／消滅手続終了に係る事項</td>
-            </tr>
-            <tr height="75">
-                <td width="738" colspan="5" align="left" class="data">   </td>
-            </tr>
-        </tbody></table>
-        <table border="0" cellspacing="0" cellpadding="0">
-            <tbody><tr>
-                <td><img src="./images/spacer.gif" width="1" height="5" border="0" alt=""></td>
-            </tr>
-        </tbody></table>
-    </div>
-
-    <div class="container">
-        <img src="./images/spacer.gif" width="1" height="1" border="0">
-            <table style="{ width: 740px; border-collapse: collapse; empty-cells: hide; }">
-                <tbody><tr>
-                    <td width="520" class="cat5">■資金の移転元となった預金口座等に係る</td>
-                    <td width="80" align="center" class="head2">No.</td>
-                    <td width="140" align="right" class="data"><b>2505-0543-0040</b></td>
-                </tr>
-            </tbody></table>
-            <img src="./images/spacer.gif" width="1" height="2" border="0">
-        <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
-            <tbody><tr>
-                <td width="220" class="head">　金融機関</td>
-                <td width="520" align="left" class="data">　ゆうちょ銀行</td>
-            </tr>
-
-            <tr>
-                <td class="head">　店舗</td>
-                <td align="left" class="data">　四〇八</td>
+                <td width="221" class="head">
+　移転元の<br>　振込利用犯罪行為の概要                </td>
+                <td width="516" colspan="4" align="left" class="data">　オレオレ詐欺</td>
             </tr>
             <tr>
-                <td class="head">　コード</td>
-                <td align="left" class="data">　408</td>
-            </tr>
-
-            <tr>
-                <td class="head">　預金等の種別</td>
-                <td align="left" class="data">　14060　　　　普通預金</td>
-            </tr>
-            <tr>
-                <td class="head">　口座番号</td>
-                <td align="left" class="data">　14881151 1488115</td>
-            </tr>
-            <tr>
-                <td class="head">　名義人の氏名又は名称</td>
-                <td align="left" class="data">　ミヤモト　マサユキ</td>
-            </tr>
-        </tbody></table>
-
-        <img src="./images/spacer.gif" width="1" height="2" border="0">
-
-
-        <table style="{ border: 1px #333333 solid; width: 740px; border-collapse: collapse; empty-cells: show; }">
-            <tbody><tr>
-                <td width="223" class="head">　対象預金等債権の額(円)</td>
-                <td width="514" colspan="4" align="left" class="data2">　</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">　権利行使の届出等に係る期間</td>
-                <td width="50" align="center" class="head">開始</td>
-                <td width="206" align="left" class="data">　 </td>
-                <td width="50" align="center" class="head">満了</td>
-                <td width="206" align="left" class="data">　 </td>
-            </tr>
-            <tr>
-                <td width="223" class="head">　権利行使の届出の方法</td>
-                <td width="514" colspan="4" align="left" class="data">　</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">
-　移転元の振込み時期                </td>
-                <td width="514" colspan="4" align="left" class="data">　2025年2月</td>
-            </tr>
-            <tr>
-                <td width="223" class="head">　取引停止等の措置時期</td>
-                <td width="514" colspan="4" align="left" class="data">　</td>
-            </tr>
-            <tr>
-                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／消滅手続終了に係る事項</td>
+                <td width="738" colspan="5" align="center" class="head">*公告が困難な理由／分配金支払手続終了に係る事項</td>
             </tr>
             <tr height="75">
                 <td width="738" colspan="5" align="left" class="data">   </td>
@@ -319,7 +241,7 @@
     </div>
     <table width="740" border="0" cellspacing="0" cellpadding="0">
         <tbody><tr>
-            <td align="left" class="cat4">★は、当該対象預金等債権の消滅までに利息が加算されて、当該債権の額が増加する可能性のあるもの。</td>
+            <td align="left" class="cat4"></td>
         </tr>
     </tbody></table>
 <table border="0" cellspacing="0" cellpadding="0">

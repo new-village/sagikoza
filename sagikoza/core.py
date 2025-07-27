@@ -385,7 +385,7 @@ def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
     
     try:
         soup = fetch_html(url, "POST", payload)
-        details = parse_accounts(soup)
+        details = parse_accounts(soup, form)
         
         if not details:
             details = [{"error": f"No accounts found for subject no={no}"}]
