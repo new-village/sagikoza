@@ -46,7 +46,7 @@ def _parse_k_pubstype_01(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # ゆうちょ銀行（テーブルが6つ）の場合、ゆうちょ銀行固有のテーブルを削除する
@@ -61,6 +61,7 @@ def _parse_k_pubstype_01(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             account['name_alias'] = _parse(jpb_container, 'table:nth-of-type(1) tr:nth-of-type(4) td.data').replace('\u3000', ' ')
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         account['branch_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(2) td.data')
@@ -85,7 +86,7 @@ def _parse_k_pubstype_04(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # ゆうちょ銀行（テーブルが6つ）の場合、ゆうちょ銀行固有のテーブルを削除する
@@ -100,6 +101,7 @@ def _parse_k_pubstype_04(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             account['name_alias'] = _parse(jpb_container, 'table:nth-of-type(1) tr:nth-of-type(4) td.data').replace('\u3000', ' ')
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         account['branch_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(2) td.data')
@@ -120,10 +122,11 @@ def _parse_k_pubstype_05(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         
@@ -152,7 +155,7 @@ def _parse_k_pubstype_07(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # ゆうちょ銀行（テーブルが6つ）の場合、ゆうちょ銀行固有のテーブルを削除する
@@ -167,6 +170,7 @@ def _parse_k_pubstype_07(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             account['name_alias'] = _parse(jpb_container, 'table:nth-of-type(1) tr:nth-of-type(4) td.data').replace('\u3000', ' ')
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         account['branch_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(2) td.data')
@@ -193,7 +197,7 @@ def _parse_k_pubstype_09(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # ゆうちょ銀行（テーブルが6つ）の場合、ゆうちょ銀行固有のテーブルを削除する
@@ -208,6 +212,7 @@ def _parse_k_pubstype_09(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             account['name_alias'] = _parse(jpb_container, 'table:nth-of-type(1) tr:nth-of-type(4) td.data').replace('\u3000', ' ')
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         account['branch_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(2) td.data')
@@ -227,10 +232,11 @@ def _parse_k_pubstype_10(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     accounts = []
     containers = soup.select('div.container')
     
-    for container in containers:
+    for i, container in enumerate(containers, start=1):
         account = {}
 
         # Extract
+        account['seq_no'] = str(i)
         account['role'] = _parse(container, 'td.cat5').replace('■', '')
         account['bank_name'] = _parse(container, 'table:nth-of-type(2) tr:nth-of-type(1) td.data')
         

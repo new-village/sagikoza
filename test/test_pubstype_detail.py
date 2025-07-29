@@ -28,7 +28,8 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
         
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': 'd06beb36cbb0a609e8942a7f09c91a74819a9013368bc8b072abbce66cb42ede',
+            'uid': '0b3e19acc3672f0a76019eaa6d2e50b8bc63c1e9be883809e212f8ccdbc939b0',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
             'branch_name': '二二八', 
@@ -57,7 +58,8 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
 
         # 青木信用金庫ケースの確認
         expected = {
-            'uid': 'ba2185b8eaa17003594792efb318cfbea291d89e8f735612b1b045fff7060878',
+            'uid': '3625850bd7ba8c3e442eb6bded4ac8cb41d1466450eacb5e7af1620052b1ae74',
+            'seq_no': '2',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': '青木信用金庫', 
             'branch_name': '越谷支店', 
@@ -83,7 +85,8 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
 
         # 京葉銀行ケースの確認
         expected = {
-            'uid': '790ab5c511422a81b0558fb964d7611ec56a8a445246b1dca8c6ef41f9d75462',
+            'uid': '2b084bca282fb34a800782b38825d63c5cdd75e5cecb3bc4a2c124be949e8030',
+            'seq_no': '3',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': '京葉銀行', 
             'branch_name': '鎌取支店', 
@@ -131,7 +134,8 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
         
         # みずほ銀行（外国人）ケースの確認
         expected = {
-            'uid': '69a94fde4b4a74f02c26e396ca8e5f6bce66150b671be386a156f820eefcdb0b',
+            'uid': 'a3d32ea5fb85016e88669290aefb562e8bb907006340a0894c6515d755409996',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
             'branch_name': '山形支店', 
@@ -179,12 +183,13 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
         
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '2e7ece3550b9b3036f0a6e3680a7cc6c1b0d2e06a10741ef760f516b96c6a004',
-            'role': '対象預金口座等に係る', 
-            'bank_name': 'ゆうちょ銀行', 
-            'branch_name': '五一八', 
-            'branch_code': '518', 
-            'account_type': '普通預金', 
+            'uid': '9d0f73c03297297403fbe423109ceabb01972a88899db5a6aebdb597d8bb0463',
+            'seq_no': '1',
+            'role': '対象預金口座等に係る',
+            'bank_name': 'ゆうちょ銀行',
+            'branch_name': '五一八',
+            'branch_code': '518',
+            'account_type': '普通預金',
             'account': '6211644', 
             'name': 'フャン ティ カイン リー', 
             'amount': '602827', 
@@ -226,7 +231,8 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
         
         # ＧＭＯあおぞらネット銀行ケースの確認
         expected = {
-            'uid': '7284c8a2a78d09c216928ba2b6a747bd14d1b3d5d72b3f51102d24ec58a58a4b',
+            'uid': '72dbc29dee7f3293fdb6722e71c72a14bd8f6a0ad255a90708a4c57e9fc72aa2',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ＧＭＯあおぞらネット銀行', 
             'branch_name': 'フリー支店', 
@@ -270,7 +276,8 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
 
         # みずほ銀行ケースの確認
         expected = {
-            'uid': 'ff68656c1dfdaf90b4cee00bf3c129cfd67ca71088682b2e605990ad5f02cfd3',
+            'uid': 'e103b83c7b00c5dadc4f2107b5d99a6f20c9e91fb45c46452959d6da141eb8aa',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
             'name': 'ＢＵＩ ＶＡＮ ＢＩＮＨ（ブイ ウ゛ァン ビン）', 
@@ -312,7 +319,8 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
 
         # みずほ銀行ケースの確認
         expected = {
-            'uid': '6e8f140f6eaa68edaf16f394aac324ae78fafa8e51bcd769b19707b2e5b3b202',
+            'uid': '019243fefd94ec3ae418cbd914602f01c34be7b580461af61671b512a432c17b',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
             'branch_name': '春日部支店', 
@@ -356,7 +364,8 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
 
         # 三菱ＵＦＪ銀行ケースの確認
         expected = {
-            'uid': '8a42e21bbb797231d2834f896a3fff6712c584817887bf73dbf6bd831e9e23f0',
+            'uid': 'dafcd7bb0fc75ccfc2dc1789b37ae5dc7c16ec1ce77a07f5611e6490e1b169b0',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': '三菱ＵＦＪ銀行', 
             'branch_name': '町田支店', 
@@ -383,7 +392,8 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
 
         # 資金の移転元となった預金口座等に係る
         expected = {
-            'uid': '54b7a9148d153aaaf3186d63338b0f6a80f4b41718043dc52e4145b65ced4edb',
+            'uid': '5066ec5a469825b267de18c72c4ccdfd5be8c86de236eead63e916a6791c3650',
+            'seq_no': '2',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
             'branch_name': '柏支店', 
@@ -432,7 +442,8 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
 
         # 住信ＳＢＩネット銀行ケースの確認
         expected = {
-            'uid': '13ec00f2fe66bbbdbe4ade01feed5ecef54877a0488057d31578fec13eabf867',
+            'uid': '3f4a9d90f23dd9d8e6b30c1bf2e9d32c7db982fcb5e03f375fe309b24a600e18',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': '住信ＳＢＩネット銀行', 
             'branch_name': '法人第一支店', 
@@ -475,7 +486,8 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
 
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': 'b7095c44bfb9f0e0dadcf7d6bce8236472e2448ec4f81bddc4685d46495b3779',
+            'uid': '8c472ace1eba2338a7cf215e6d5eadb4142b0893bfce1249ab5b48a264c3edb6',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
             'name': 'ＴＲＡＮ ＶＡＮ ＣＡＮＨ（チャン ウ゛ァン カイン）', 
@@ -516,7 +528,8 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
 
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': 'f60b488a2f135cb1f199923fb1f9e2df793049edd07f6b2522ba8c6db46d888d',
+            'uid': '0989e2baf2b5504768a7c9d68de0031febc48891043b1176a31eafc6bb437ce9',
+            'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
             'branch_name': '赤羽支店', 
