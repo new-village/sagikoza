@@ -32,7 +32,7 @@ def normalize_accounts(account: Dict[str, Any]) -> List[Dict[str, Any]]:
             account['name'] = m.group(2).strip()
             account['name_alias'] = m.group(1).strip()
     
-
+    # 日付け関連のフィールドをdate型に変換
     for date_field in ['notice_date', 'suspend_date', 'delete_date']:
         if date_field in account and isinstance(account[date_field], str):
             # 例: '2024年6月5日' -> '2024-06-05'
@@ -43,5 +43,19 @@ def normalize_accounts(account: Dict[str, Any]) -> List[Dict[str, Any]]:
                     account[date_field] = f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
             except Exception:
                 pass
+    
+    #9 異常値の修正（2505-0543-0040 対応）
+    # account_typeに5桁の数字が含まれている場合、抽出してbranch_code_jpbに入れる
+    if 'account_type' in account and isinstance(account['account_type'], str):
+        parts = account['account_type'].split()
+        if len(parts) == 2:
+            account['branch_code_jpb'] = parts[0].strip()
+            account['account_type'] = parts[1].strip()
+    # accountフィールドを分割してaccount_jpbとaccountに格納
+    if 'account' in account and isinstance(account['account'], str):
+        parts = account['account'].split()
+        if len(parts) == 2:
+            account['account_jpb'] = parts[0].strip().zfill(8)
+            account['account'] = parts[1].strip().zfill(7)
 
     return [account]

@@ -160,6 +160,109 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
         assert result[0] == expected
 
 @pytest.fixture
+def k_pubstype_01_detail_3():
+    # テスト用HTMLを読み込む
+    with open("test/pages/k_pubstype_01_detail_3.html", encoding="utf-8") as f:
+        return f.read()
+
+def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
+    with patch("sagikoza.core.fetch_html") as mock_fetch_html:
+        mock_soup = BeautifulSoup(k_pubstype_01_detail_3, "html.parser")
+        mock_fetch_html.return_value = mock_soup
+        subject = {
+            "form": "k_pubstype_01_detail.php",
+            "no": "2505-0543-0040",
+            "pn": "369281",
+            "p_id": "01",
+            "re": "0",
+            "referer": '0'
+        }
+        result = core._pubstype_detail(subject)
+        assert isinstance(result, list)
+        assert len(result) == 3
+        
+        # ゆうちょ銀行ケースの確認
+        expected = {
+            'uid': '8b21244b67cfaf518971f1f2d5d74ffcb61cc7b5366049675898fb606d3c45a1',
+            'seq_no': '1',
+            'role': '対象預金口座等に係る', 
+            'bank_name': '名古屋銀行', 
+            'branch_name': '安城支店', 
+            'branch_code': '287', 
+            'account_type': '普通預金', 
+            'account': '3438687', 
+            'name': 'サワイ ケイコ', 
+            'amount': '3021', 
+            'effective_from': '2025年6月3日 0時', 
+            'effective_to': '2025年8月4日 15時', 
+            'effective_method': '所定の届出書を提出（詳細は照会先へご連絡下さい）', 
+            'payment_period': '2025年2月', 
+            'suspend_date': '2025年2月20日', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2505-0543-0040', 
+            'pn': '369281', 
+            'p_id': '01', 
+            're': '0', 
+            'referer': '0'
+        }
+        assert result[0] == expected
+
+        # 異常値ケースの確認
+        expected = {
+            'uid': '50a94d1d7c589d6dae3981318bd7462c1f6482edf8701c7fb973ff62475d9e9b',
+            'seq_no': '2',
+            'role': '資金の移転元となった預金口座等に係る', 
+            'bank_name': 'ゆうちょ銀行', 
+            'branch_name': '四〇八', 
+            'branch_code': '408', 
+            'account_type': '14000　　　　普通預金', 
+            'account': '7555041 755504', 
+            'name': 'ミヤモト マサユキ', 
+            'amount': '', 
+            'effective_from': '', 
+            'effective_to': '', 
+            'effective_method': '', 
+            'payment_period': '2025年2月', 
+            'suspend_date': '', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2505-0543-0040', 
+            'pn': '369281', 
+            'p_id': '01', 
+            're': '0', 
+            'referer': '0'
+        }
+        assert result[1] == expected
+
+        # 異常値ケースの確認
+        expected = {
+            'uid': 'd8e6a1519d8ab72fa29ab65f75b8d6fae16a8d80aa7d29da8887b4d1b62d6787',
+            'seq_no': '3',
+            'role': '資金の移転元となった預金口座等に係る', 
+            'bank_name': 'ゆうちょ銀行', 
+            'branch_name': '四〇八', 
+            'branch_code': '408', 
+            'account_type': '14060　　　　普通預金', 
+            'account': '14881151 1488115', 
+            'name': 'ミヤモト マサユキ', 
+            'amount': '', 
+            'effective_from': '', 
+            'effective_to': '', 
+            'effective_method': '', 
+            'payment_period': '2025年2月', 
+            'suspend_date': '', 
+            'notes': '', 
+            'form': 'k_pubstype_01_detail.php', 
+            'no': '2505-0543-0040', 
+            'pn': '369281', 
+            'p_id': '01', 
+            're': '0', 
+            'referer': '0'
+        }
+        assert result[2] == expected
+
+@pytest.fixture
 def k_pubstype_04_detail_1():
     # テスト用HTMLを読み込む
     with open("test/pages/k_pubstype_04_detail_1.php", encoding="utf-8") as f:
