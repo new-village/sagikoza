@@ -58,4 +58,26 @@ def normalize_accounts(account: Dict[str, Any]) -> List[Dict[str, Any]]:
             account['account_jpb'] = parts[0].strip().zfill(8)
             account['account'] = parts[1].strip().zfill(7)
 
+    #7 ゆうちょ銀行レコードの支店名と口座番号の登録
+    if ('branch_code' not in account or not account['branch_code']) and 'branch_code_jpb' in account and account['branch_code_jpb']:
+        bcj = account['branch_code_jpb']
+        if len(bcj) >= 3:
+            if bcj[0] == '1':
+                branch_code = f"{bcj[1:3]}8"
+                account['account_type'] = '普通預金'
+            elif bcj[0] == '0':
+                branch_code = f"{bcj[1:3]}9"
+                account['account_type'] = '振替口座'
+            else:
+                branch_code = ''
+            if branch_code:
+                account['branch_code'] = branch_code.zfill(3)
+                # 漢数字変換
+                kanji_digits = {'0': '〇', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八', '9': '九'}
+                account['branch_name'] = ''.join(kanji_digits.get(d, d) for d in account['branch_code'])
+
+    if ('account' not in account or not account['account']) and 'account_jpb' in account and account['account_jpb']:
+        acc_jpb = account['account_jpb'][:7]
+        account['account'] = acc_jpb.zfill(7)
+
     return [account]
