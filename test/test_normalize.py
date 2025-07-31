@@ -645,3 +645,11 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "referer": '0'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
+
+def test_normalize_accounts_error_case():
+    """Test normalize_accounts with error subject"""
+    subject = {'error': 'No submit details found for doc_id=15784'}
+    result = core.normalize_accounts(subject)
+    
+    # Should return empty list when subject contains error
+    assert result == [{'error': 'No submit details found for doc_id=15784'}]

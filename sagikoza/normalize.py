@@ -13,7 +13,7 @@ def normalize_accounts(account: Dict[str, Any]) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: List of accounts with unique identifiers.
     """
     if 'error' in account:
-        return []  # Skip accounts with errors
+        return [account]  # Return the account with error as-is
 
     # Generate a unique identifier for the account
     for field in ['name', 'name_alias']:
