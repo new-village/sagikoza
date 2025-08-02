@@ -136,16 +136,19 @@ def test_pubstype_detail_empty():
             "pn": "365600",
             "p_id": "0034",
             "re": "0",
+            "doc_id": "12345",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
         expected = {
             'error': 'No accounts found for subject no=2421-0034-0004',
+            'uid': '12345-2421-0034-0004-0',
             "form": "k_pubstype_01_detail.php",
             "no": "2421-0034-0004",
             "pn": "365600",
             "p_id": "0034",
             "re": "0",
+            "doc_id": "12345",
             "referer": '0'
         }
         assert result[0] == expected

@@ -20,7 +20,8 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             "pn": "375438",
             "p_id": "03",
             "re": "0",
-            "referer": '0'
+            "doc_id": "15931",
+            "referer": '0',
         }
         result = core._pubstype_detail(subject)
         assert isinstance(result, list)
@@ -28,7 +29,7 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
         
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '0b3e19acc3672f0a76019eaa6d2e50b8bc63c1e9be883809e212f8ccdbc939b0',
+            'uid': '15931-2505-9900-0335-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
@@ -52,13 +53,14 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'pn': '375438', 
             'p_id': '03', 
             're': '0', 
+            "doc_id": "15931",
             'referer': '0'
         }
         assert result[0] == expected
 
         # 青木信用金庫ケースの確認
         expected = {
-            'uid': '3625850bd7ba8c3e442eb6bded4ac8cb41d1466450eacb5e7af1620052b1ae74',
+            'uid': '15931-2505-9900-0335-2',
             'seq_no': '2',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': '青木信用金庫', 
@@ -79,13 +81,14 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'pn': '375438', 
             'p_id': '03', 
             're': '0', 
+            "doc_id": "15931",
             'referer': '0'
         }
         assert result[1] == expected
 
         # 京葉銀行ケースの確認
         expected = {
-            'uid': '2b084bca282fb34a800782b38825d63c5cdd75e5cecb3bc4a2c124be949e8030',
+            'uid': '15931-2505-9900-0335-3',
             'seq_no': '3',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': '京葉銀行', 
@@ -106,6 +109,7 @@ def test_k_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'pn': '375438', 
             'p_id': '03', 
             're': '0', 
+            "doc_id": "15931",
             'referer': '0'
         }
         assert result[2] == expected
@@ -126,6 +130,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             "pn": "375331",
             "p_id": "03",
             "re": "0",
+            "doc_id": "15937",
             "referer": '1'
         }
         result = core._pubstype_detail(subject)
@@ -134,7 +139,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
         
         # みずほ銀行（外国人）ケースの確認
         expected = {
-            'uid': 'a3d32ea5fb85016e88669290aefb562e8bb907006340a0894c6515d755409996',
+            'uid': '15937-2506-0001-0894-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
@@ -155,6 +160,7 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             'pn': '375331', 
             'p_id': '03', 
             're': '0', 
+            "doc_id": "15937",
             'referer': '1'
         }
         assert result[0] == expected
@@ -175,6 +181,7 @@ def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
             "pn": "369281",
             "p_id": "01",
             "re": "0",
+            "doc_id": "15442",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -183,7 +190,7 @@ def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
         
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '8b21244b67cfaf518971f1f2d5d74ffcb61cc7b5366049675898fb606d3c45a1',
+            'uid': '15442-2505-0543-0040-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': '名古屋銀行', 
@@ -204,13 +211,14 @@ def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'pn': '369281', 
             'p_id': '01', 
             're': '0', 
+            "doc_id": "15442",
             'referer': '0'
         }
         assert result[0] == expected
 
         # 異常値ケースの確認
         expected = {
-            'uid': '50a94d1d7c589d6dae3981318bd7462c1f6482edf8701c7fb973ff62475d9e9b',
+            'uid': '15442-2505-0543-0040-2',
             'seq_no': '2',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
@@ -231,13 +239,14 @@ def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'pn': '369281', 
             'p_id': '01', 
             're': '0', 
+            "doc_id": "15442",
             'referer': '0'
         }
         assert result[1] == expected
 
         # 異常値ケースの確認
         expected = {
-            'uid': 'd8e6a1519d8ab72fa29ab65f75b8d6fae16a8d80aa7d29da8887b4d1b62d6787',
+            'uid': '15442-2505-0543-0040-3',
             'seq_no': '3',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
@@ -258,6 +267,7 @@ def test_k_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'pn': '369281', 
             'p_id': '01', 
             're': '0', 
+            "doc_id": "15442",
             'referer': '0'
         }
         assert result[2] == expected
@@ -278,6 +288,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "pn": "368470",
             "p_id": "05",
             "re": "0",
+            "doc_id": "15606",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -286,7 +297,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
         
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '9d0f73c03297297403fbe423109ceabb01972a88899db5a6aebdb597d8bb0463',
+            'uid': '15606-2503-9900-0475-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る',
             'bank_name': 'ゆうちょ銀行',
@@ -306,6 +317,7 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "pn": "368470",
             "p_id": "05",
             "re": "0",
+            "doc_id": "15606",
             "referer": '0'
         }
         assert result[0] == expected
@@ -326,6 +338,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "pn": "372840",
             "p_id": "05",
             "re": "0",
+            "doc_id": "15842",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -334,7 +347,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
         
         # ＧＭＯあおぞらネット銀行ケースの確認
         expected = {
-            'uid': '72dbc29dee7f3293fdb6722e71c72a14bd8f6a0ad255a90708a4c57e9fc72aa2',
+            'uid': '15842-2507-0310-0051-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ＧＭＯあおぞらネット銀行', 
@@ -351,6 +364,7 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "pn": "372840",
             "p_id": "05",
             "re": "0",
+            "doc_id": "15842",
             "referer": '0'
         }
         assert result[0] == expected
@@ -371,6 +385,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "pn": "373302",
             "p_id": "07",
             "re": "0",
+            "doc_id": "15802",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -379,7 +394,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
 
         # みずほ銀行ケースの確認
         expected = {
-            'uid': 'e103b83c7b00c5dadc4f2107b5d99a6f20c9e91fb45c46452959d6da141eb8aa',
+            'uid': '15802-2503-9900-0011-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
@@ -394,6 +409,7 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "pn": "373302",
             "p_id": "07",
             "re": "0",
+            "doc_id": "15802",
             "referer": '0'
         }
         assert result[0] == expected
@@ -414,6 +430,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "pn": "371209",
             "p_id": "07",
             "re": "0",
+            "doc_id": "15712",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -422,7 +439,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
 
         # みずほ銀行ケースの確認
         expected = {
-            'uid': '019243fefd94ec3ae418cbd914602f01c34be7b580461af61671b512a432c17b',
+            'uid': '15712-2502-0001-0034-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
@@ -439,6 +456,7 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "pn": "371209",
             "p_id": "07",
             "re": "0",
+            "doc_id": "15712",
             "referer": '0'
         }
         assert result[0] == expected
@@ -459,6 +477,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "pn": "373593",
             "p_id": "08",
             "re": "0",
+            "doc_id": "15713",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -467,7 +486,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
 
         # 三菱ＵＦＪ銀行ケースの確認
         expected = {
-            'uid': 'dafcd7bb0fc75ccfc2dc1789b37ae5dc7c16ec1ce77a07f5611e6490e1b169b0',
+            'uid': '15713-2502-0005-0027-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': '三菱ＵＦＪ銀行', 
@@ -489,13 +508,14 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "pn": "373593",
             "p_id": "08",
             "re": "0",
+            "doc_id": "15713",
             "referer": '0'
         }
         assert result[0] == expected
 
         # 資金の移転元となった預金口座等に係る
         expected = {
-            'uid': '5066ec5a469825b267de18c72c4ccdfd5be8c86de236eead63e916a6791c3650',
+            'uid': '15713-2502-0005-0027-2',
             'seq_no': '2',
             'role': '資金の移転元となった預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
@@ -517,6 +537,7 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "pn": "373593",
             "p_id": "08",
             "re": "0",
+            "doc_id": "15713",
             "referer": '0'
         }
         assert result[1] == expected
@@ -537,6 +558,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "pn": "370345",
             "p_id": "12",
             "re": "0",
+            "doc_id": "15692",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -545,7 +567,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
 
         # 住信ＳＢＩネット銀行ケースの確認
         expected = {
-            'uid': '3f4a9d90f23dd9d8e6b30c1bf2e9d32c7db982fcb5e03f375fe309b24a600e18',
+            'uid': '15692-2411-0038-0042-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': '住信ＳＢＩネット銀行', 
@@ -561,6 +583,7 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "pn": "370345",
             "p_id": "12",
             "re": "0",
+            "doc_id": "15692",
             "referer": '0'
         }
         assert result[0] == expected
@@ -581,6 +604,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "pn": "371720",
             "p_id": "11",
             "re": "0",
+            "doc_id": "15707",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -589,7 +613,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
 
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '8c472ace1eba2338a7cf215e6d5eadb4142b0893bfce1249ab5b48a264c3edb6',
+            'uid': '15707-2415-9900-0114-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'ゆうちょ銀行', 
@@ -603,6 +627,7 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "pn": "371720",
             "p_id": "11",
             "re": "0",
+            "doc_id": "15707",
             "referer": '0'
         }
         assert result[0] == expected
@@ -623,6 +648,7 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "pn": "369725",
             "p_id": "11",
             "re": "0",
+            "doc_id": "15643",
             "referer": '0'
         }
         result = core._pubstype_detail(subject)
@@ -631,7 +657,7 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
 
         # ゆうちょ銀行ケースの確認
         expected = {
-            'uid': '0989e2baf2b5504768a7c9d68de0031febc48891043b1176a31eafc6bb437ce9',
+            'uid': '15643-2412-0001-0028-1',
             'seq_no': '1',
             'role': '対象預金口座等に係る', 
             'bank_name': 'みずほ銀行', 
@@ -647,6 +673,7 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "pn": "369725",
             "p_id": "11",
             "re": "0",
+            "doc_id": "15643",
             "referer": '0'
         }
         assert result[0] == expected

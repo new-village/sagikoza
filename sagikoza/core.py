@@ -226,6 +226,26 @@ def fetch_html(
     return BeautifulSoup(resp.text, 'html.parser')
 
 
+def _generate_uid(data: Dict[str, Any]) -> str:
+    """
+    データ辞書からUIDを生成する。
+    
+    Args:
+        data: doc_id, no, seq_noを含むデータ辞書
+        
+    Returns:
+        doc_id-no-seq_no形式のUID文字列
+        
+    Note:
+        - noが空白の場合は '0000-0000-0000' を使用
+        - seq_noが空白の場合は '0' を使用
+    """
+    doc_id = data.get('doc_id', '')
+    no_value = data.get('no', '').strip() or '0000-0000-0000'
+    seq_no_value = str(data.get('seq_no', '')).strip() or '0'
+    return f"{doc_id}-{no_value}-{seq_no_value}"
+
+
 def _sel_pubs(year: str = "near3") -> List[Dict[str, Any]]:
     """指定された年の公告通知を取得する。"""
     year = validate_year_parameter(year)
@@ -348,7 +368,14 @@ def _pubstype_detail(subject: Dict[str, Any]) -> List[Dict[str, Any]]:
         else:
             logger.debug(f"Fetched {len(details)} accounts for subject no={no}")
         
-        return [{**detail, **subject} for detail in details]
+        # UIDを生成して各詳細に追加
+        result = []
+        for detail in details:
+            combined = {**detail, **subject}
+            combined['uid'] = _generate_uid(combined)
+            result.append(combined)
+        
+        return result
     except Exception as e:
         logger.error(f"Exception in _pubstype_detail: {e} | subject={subject}")
         raise

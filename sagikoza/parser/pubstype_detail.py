@@ -39,7 +39,7 @@ def parse_accounts(soup: BeautifulSoup, form: str) -> List[Dict[str, Any]]:
     except Exception as e:
         return [{"error": f"Failed to parse account details: {str(e)}"}]
 
-    return _generate_uid(accounts)
+    return accounts
 
 def _parse_k_pubstype_01(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     """Parse k_pubstype_01_detail pages - 消滅手続が開始された対象預金等債権"""
@@ -268,10 +268,3 @@ def _parse(soup: BeautifulSoup, selector: str) -> str:
     else:
         return ''
 
-def _generate_uid(accounts: List[Dict[str, Any]]) -> str:
-    for account in accounts:
-        if 'error' not in account:
-            """Generate a unique identifier for an account."""
-            account_json = json.dumps(account, sort_keys=True, ensure_ascii=False)
-            account['uid'] = hashlib.sha256(account_json.encode('utf-8')).hexdigest()
-    return accounts
