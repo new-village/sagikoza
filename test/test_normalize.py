@@ -21,7 +21,8 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             "p_id": "03",
             "re": "0",
             "doc_id": "15931",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": "令和７年７月２５日"
         }
         accounts = core._pubstype_detail(subject)
         
@@ -52,7 +53,8 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'p_id': '03', 
             're': '0', 
             "doc_id": "15931",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-07-25"
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -80,7 +82,8 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'p_id': '03', 
             're': '0', 
             "doc_id": "15931",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-07-25"
         }
         assert core.normalize_accounts(accounts[1])[0] == expected
 
@@ -108,7 +111,8 @@ def test_normalize_pubstype_01_detail_1(k_pubstype_01_detail_1):
             'p_id': '03', 
             're': '0', 
             "doc_id": "15931",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-07-25"
         }
         assert core.normalize_accounts(accounts[2])[0] == expected
 
@@ -129,7 +133,8 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             "p_id": "03",
             "re": "0",
             "doc_id": "15937",
-            "referer": '1'
+            "referer": '1',
+            "notice_date": "令和７年７月２５日"
         }
         accounts = core._pubstype_detail(subject)
         
@@ -158,7 +163,8 @@ def test_k_pubstype_01_detail_2(k_pubstype_01_detail_2):
             'p_id': '03', 
             're': '0', 
             "doc_id": "15937",
-            'referer': '1'
+            'referer': '1',
+            "notice_date": "2025-07-25"
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -179,7 +185,8 @@ def test_normalize_pubstype_01_detail_3(k_pubstype_01_detail_3):
             "p_id": "01",
             "re": "0",
             "doc_id": "15442",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": "令和７年６月２日"
         }
         accounts = core._pubstype_detail(subject)
         
@@ -207,7 +214,8 @@ def test_normalize_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'p_id': '01', 
             're': '0', 
             "doc_id": "15442",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-06-02"
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -237,7 +245,8 @@ def test_normalize_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'p_id': '01', 
             're': '0', 
             "doc_id": "15442",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-06-02"
         }
         assert core.normalize_accounts(accounts[1])[0] == expected
 
@@ -267,7 +276,8 @@ def test_normalize_pubstype_01_detail_3(k_pubstype_01_detail_3):
             'p_id': '01', 
             're': '0', 
             "doc_id": "15442",
-            'referer': '0'
+            'referer': '0',
+            "notice_date": "2025-06-02"
         }
         assert core.normalize_accounts(accounts[2])[0] == expected
 
@@ -288,7 +298,8 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "p_id": "05",
             "re": "0",
             "doc_id": "15606",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": "令和７年５月２６日"
         }
         accounts = core._pubstype_detail(subject)
         
@@ -315,7 +326,8 @@ def test_k_pubstype_04_detail_1(k_pubstype_04_detail_1):
             "p_id": "05",
             "re": "0",
             "doc_id": "15606",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": "2025-05-26"
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -336,7 +348,8 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "p_id": "05",
             "re": "0",
             "doc_id": "15842",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": '令和７年７月９日'
         }
         accounts = core._pubstype_detail(subject)
         
@@ -360,7 +373,8 @@ def test_k_pubstype_04_detail_2(k_pubstype_04_detail_2):
             "p_id": "05",
             "re": "0",
             "doc_id": "15842",
-            "referer": '0'
+            "referer": '0',
+            "notice_date": '2025-07-09'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -381,7 +395,8 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "p_id": "07",
             "re": "0",
             "doc_id": "15802",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年７月１６日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -408,7 +423,8 @@ def test_k_pubstype_05_detail_1(k_pubstype_05_detail_1):
             "p_id": "07",
             "re": "0",
             "doc_id": "15802",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-07-16'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -429,7 +445,8 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "p_id": "07",
             "re": "0",
             "doc_id": "15712",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年７月１日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -454,7 +471,8 @@ def test_k_pubstype_05_detail_2(k_pubstype_05_detail_2):
             "p_id": "07",
             "re": "0",
             "doc_id": "15712",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-07-01'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -475,7 +493,8 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "p_id": "08",
             "re": "0",
             "doc_id": "15713",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年７月１６日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -504,7 +523,8 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "p_id": "08",
             "re": "0",
             "doc_id": "15713",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-07-16'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -533,7 +553,8 @@ def test_k_pubstype_07_detail_1(k_pubstype_07_detail_1):
             "p_id": "08",
             "re": "0",
             "doc_id": "15713",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-07-16'
         }
         assert core.normalize_accounts(accounts[1])[0] == expected
 
@@ -554,7 +575,8 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "p_id": "12",
             "re": "0",
             "doc_id": "15692",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年６月１６日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -577,7 +599,8 @@ def test_k_pubstype_09_detail_1(k_pubstype_09_detail_1):
             "p_id": "12",
             "re": "0",
             "doc_id": "15692",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-06-16',
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -598,7 +621,8 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "p_id": "11",
             "re": "0",
             "doc_id": "15707",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年７月１日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -624,7 +648,8 @@ def test_k_pubstype_10_detail_1(k_pubstype_10_detail_1):
             "p_id": "11",
             "re": "0",
             "doc_id": "15707",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-07-01'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
@@ -645,7 +670,8 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "p_id": "11",
             "re": "0",
             "doc_id": "15643",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '令和７年６月１６日'
         }
         accounts = core._pubstype_detail(subject)
 
@@ -669,7 +695,8 @@ def test_k_pubstype_10_detail_2(k_pubstype_10_detail_2):
             "p_id": "11",
             "re": "0",
             "doc_id": "15643",
-            "referer": '0'
+            "referer": '0',
+            'notice_date': '2025-06-16'
         }
         assert core.normalize_accounts(accounts[0])[0] == expected
 
