@@ -7,6 +7,8 @@ from jpdatetime import jpdatetime
 LONG_VOWEL_PATTERN = re.compile(r'[-˗ᅳ᭸‐‑‒–—―⁃⁻−▬─━➖ーㅡ﹘﹣－ｰ𐄐𐆑]')
 NAME_SPLIT_PATTERN = re.compile(r'^([A-Za-z0-9 ]+)\s*\（([\u30A0-\u30FF\s]{3,})\）$|^([\u30A0-\u30FF\s]{3,})\s*\（([A-Za-z0-9 ]+)\）$')
 DATE_PATTERN = re.compile(r'(\d{4})年(\d{1,2})月(\d{1,2})日')
+ACCOUNT_TYPE_BRACKET_PATTERN = re.compile(r'^([A-Za-z0-9]+)〔(.+)〕$')
+ACCOUNT_BRACKET_PATTERN = re.compile(r'^([0-9]+)〔([0-9]+)〕$')
 
 # 定数定義
 NAME_FIELDS = ('name', 'name_alias')
@@ -85,6 +87,14 @@ def _split_account_type_field(account: Dict[str, Any]) -> None:
     if not isinstance(account_type, str):
         return
     
+    # 〔〕で囲まれたパターンをチェック
+    bracket_match = ACCOUNT_TYPE_BRACKET_PATTERN.match(account_type)
+    if bracket_match:
+        account['branch_code_jpb'] = bracket_match.group(1).strip()
+        account['account_type'] = bracket_match.group(2).strip()
+        return
+    
+    # スペース区切りのパターンをチェック
     parts = account_type.split()
     if len(parts) == 2:
         account['branch_code_jpb'] = parts[0].strip()
@@ -97,6 +107,14 @@ def _split_account_field(account: Dict[str, Any]) -> None:
     if not isinstance(account_value, str):
         return
     
+    # 〔〕で囲まれたパターンをチェック
+    bracket_match = ACCOUNT_BRACKET_PATTERN.match(account_value)
+    if bracket_match:
+        account['account_jpb'] = bracket_match.group(1).strip().zfill(8)
+        account['account'] = bracket_match.group(2).strip().zfill(7)
+        return
+    
+    # スペース区切りのパターンをチェック
     parts = account_value.split()
     if len(parts) == 2:
         account['account_jpb'] = parts[0].strip().zfill(8)
