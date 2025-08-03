@@ -5,7 +5,7 @@ from jpdatetime import jpdatetime
 
 # 正規表現パターンをコンパイル（パフォーマンス向上）
 LONG_VOWEL_PATTERN = re.compile(r'[-˗ᅳ᭸‐‑‒–—―⁃⁻−▬─━➖ーㅡ﹘﹣－ｰ𐄐𐆑]')
-NAME_SPLIT_PATTERN = re.compile(r'^([A-Za-z0-9 ]+)\s*\（([\u30A0-\u30FF\s]{3,})\）$')
+NAME_SPLIT_PATTERN = re.compile(r'^([A-Za-z0-9 ]+)\s*\（([\u30A0-\u30FF\s]{3,})\）$|^([\u30A0-\u30FF\s]{3,})\s*\（([A-Za-z0-9 ]+)\）$')
 DATE_PATTERN = re.compile(r'(\d{4})年(\d{1,2})月(\d{1,2})日')
 
 # 定数定義
@@ -52,8 +52,14 @@ def _process_name_field(account: Dict[str, Any]) -> None:
     
     match = NAME_SPLIT_PATTERN.match(name)
     if match:
-        account['name'] = match.group(2).strip()
-        account['name_alias'] = match.group(1).strip()
+        if match.group(1) and match.group(2):
+            # パターン1: アルファベット名（日本語名）
+            account['name'] = match.group(2).strip()
+            account['name_alias'] = match.group(1).strip()
+        elif match.group(3) and match.group(4):
+            # パターン2: 日本語名（アルファベット名）
+            account['name'] = match.group(3).strip()
+            account['name_alias'] = match.group(4).strip()
 
 
 def _convert_date_fields(account: Dict[str, Any]) -> None:
